@@ -89,6 +89,7 @@
             this.rolleriDüzenleToolStripMenuItem.Name = "rolleriDüzenleToolStripMenuItem";
             this.rolleriDüzenleToolStripMenuItem.Size = new System.Drawing.Size(271, 32);
             this.rolleriDüzenleToolStripMenuItem.Text = "Rolleri düzenle";
+            this.rolleriDüzenleToolStripMenuItem.Click += new System.EventHandler(this.rolleriDüzenleToolStripMenuItem_Click);
             // 
             // kullanıcılarıDüzenleToolStripMenuItem
             // 
@@ -108,6 +109,7 @@
             this.ürünlerToolStripMenuItem.Name = "ürünlerToolStripMenuItem";
             this.ürünlerToolStripMenuItem.Size = new System.Drawing.Size(91, 32);
             this.ürünlerToolStripMenuItem.Text = "Ürünler";
+            this.ürünlerToolStripMenuItem.Click += new System.EventHandler(this.ürünlerToolStripMenuItem_Click);
             // 
             // menüToolStripMenuItem
             // 

@@ -70,6 +70,18 @@
     <Compile Include="Ekranlar\admin\AdminMasaEkranı.Designer.cs">
       <DependentUpon>AdminMasaEkranı.cs</DependentUpon>
     </Compile>
+    <Compile Include="Ekranlar\admin\AdminRollerEkranı.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ekranlar\admin\AdminRollerEkranı.Designer.cs">
+      <DependentUpon>AdminRollerEkranı.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ekranlar\admin\AdminUrunlerEkranı.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ekranlar\admin\AdminUrunlerEkranı.Designer.cs">
+      <DependentUpon>AdminUrunlerEkranı.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ekranlar\garson\KatEkranı.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,6 +113,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Ekranlar\admin\AdminMasaEkranı.resx">
       <DependentUpon>AdminMasaEkranı.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ekranlar\admin\AdminRollerEkranı.resx">
+      <DependentUpon>AdminRollerEkranı.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ekranlar\admin\AdminUrunlerEkranı.resx">
+      <DependentUpon>AdminUrunlerEkranı.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Ekranlar\garson\KatEkranı.resx">
       <DependentUpon>KatEkranı.cs</DependentUpon>

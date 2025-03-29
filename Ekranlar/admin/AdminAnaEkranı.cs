@@ -31,5 +31,20 @@ namespace RestoranModulu.Ekranlar.admin
             form.MdiParent = this;
             form.Show();
         }
+        // Menu_Rolleri Düzenle butonu
+        private void rolleriDüzenleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AdminRollerEkranı form = new AdminRollerEkranı();
+            form.MdiParent = this;
+            form.Show();
+        }
+
+        // Menu_Ürünler butonu
+        private void ürünlerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AdminUrunlerEkranı form = new AdminUrunlerEkranı();
+            form.MdiParent = this;
+            form.Show();
+        }
     }
 }
