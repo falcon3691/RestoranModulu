@@ -76,6 +76,18 @@
     <Compile Include="Ekranlar\admin\AdminRollerEkranı.Designer.cs">
       <DependentUpon>AdminRollerEkranı.cs</DependentUpon>
     </Compile>
+    <Compile Include="Ekranlar\admin\AdminSiparisDetayEkranı.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ekranlar\admin\AdminSiparisDetayEkranı.Designer.cs">
+      <DependentUpon>AdminSiparisDetayEkranı.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ekranlar\admin\AdminSiparislerEkranı.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ekranlar\admin\AdminSiparislerEkranı.Designer.cs">
+      <DependentUpon>AdminSiparislerEkranı.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ekranlar\admin\AdminUrunlerEkranı.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -116,6 +128,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Ekranlar\admin\AdminRollerEkranı.resx">
       <DependentUpon>AdminRollerEkranı.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ekranlar\admin\AdminSiparisDetayEkranı.resx">
+      <DependentUpon>AdminSiparisDetayEkranı.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ekranlar\admin\AdminSiparislerEkranı.resx">
+      <DependentUpon>AdminSiparislerEkranı.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Ekranlar\admin\AdminUrunlerEkranı.resx">
       <DependentUpon>AdminUrunlerEkranı.cs</DependentUpon>
