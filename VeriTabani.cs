@@ -35,6 +35,8 @@ public class VeriTabani
         return null;
     }
 
+
+    // GİRİŞ EKRANI //
     // Giriş ekranında kullanıcı kontrolü yaparken kullanılır ve Data Table olarak geri döndürür.
     public DataTable KullaniciListele(string tabloAdi, string kullaniciAdi, string kullaniciParola)
     {
@@ -63,7 +65,7 @@ public class VeriTabani
         }
         return null;
     }
-
+    // "Kullanicilar" tablosuna veri ekler.
     public bool KullaniciEkle(string adiSoyadi, string kullaniciAdi, string parola, int rolID, byte durumu = 1,
                               string aciklama = null, string telefon = null, string eMail = null)
     {

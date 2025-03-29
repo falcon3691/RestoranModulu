@@ -1,4 +1,5 @@
 ﻿using RestoranModulu.Ekranlar.admin;
+using RestoranModulu.Ekranlar.garson;
 using System;
 using System.Windows.Forms;
 namespace RestoranModulu
@@ -15,30 +16,36 @@ namespace RestoranModulu
         // Admin butonu
         private void button1_Click(object sender, EventArgs e)
         {
-            if (boslukKontrolu())
-            {
-                if (vt.KullaniciListele("Kullanicilar", textBox1.Text, textBox2.Text) != null)
-                {
-                    AdminAnaEkranı form = new AdminAnaEkranı();
-                    this.Hide();
-                    form.ShowDialog();
-                    this.Close();
-                }
-            }/*
+            /* if (boslukKontrolu())
+             {
+                 if (vt.KullaniciListele("Kullanicilar", textBox1.Text, textBox2.Text) != null)
+                 {
+                     AdminAnaEkranı form = new AdminAnaEkranı();
+                     this.Hide();
+                     form.ShowDialog();
+                     this.Close();
+                 }
+             }*/
             AdminAnaEkranı form = new AdminAnaEkranı();
             this.Hide();
             form.ShowDialog();
-            this.Close();*/
+            this.Close();
         }
         // Kasa butonu
         private void button2_Click(object sender, EventArgs e)
         {
-
+            KatEkranı form = new KatEkranı();
+            this.Hide();
+            form.ShowDialog();
+            this.Close();
         }
         // Garson butonu
         private void button3_Click(object sender, EventArgs e)
         {
-
+            KatEkranı form = new KatEkranı();
+            this.Hide();
+            form.ShowDialog();
+            this.Close();
         }
         // Çıkma butonu
         private void button4_Click(object sender, EventArgs e)

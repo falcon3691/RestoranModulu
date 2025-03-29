@@ -24,5 +24,13 @@ namespace RestoranModulu.Ekranlar.admin
             form.MdiParent = this;
             form.Show();
         }
+
+        // Menu_Katlar butonu
+        private void katlarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AdminKatEkranı form = new AdminKatEkranı();
+            form.MdiParent = this;
+            form.Show();
+        }
     }
 }

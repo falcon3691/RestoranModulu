@@ -52,11 +52,23 @@
     <Compile Include="Ekranlar\admin\AdminAnaEkranı.Designer.cs">
       <DependentUpon>AdminAnaEkranı.cs</DependentUpon>
     </Compile>
+    <Compile Include="Ekranlar\admin\AdminKatEkranı.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ekranlar\admin\AdminKatEkranı.Designer.cs">
+      <DependentUpon>AdminKatEkranı.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ekranlar\admin\AdminKullaniciEkranı.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Ekranlar\admin\AdminKullaniciEkranı.Designer.cs">
       <DependentUpon>AdminKullaniciEkranı.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ekranlar\garson\KatEkranı.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ekranlar\garson\KatEkranı.Designer.cs">
+      <DependentUpon>KatEkranı.cs</DependentUpon>
     </Compile>
     <Compile Include="Ekranlar\GirisEkranı.cs">
       <SubType>Form</SubType>
@@ -77,6 +89,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Ekranlar\admin\AdminKullaniciEkranı.resx">
       <DependentUpon>AdminKullaniciEkranı.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ekranlar\garson\KatEkranı.resx">
+      <DependentUpon>KatEkranı.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Ekranlar\GirisEkranı.resx">
       <DependentUpon>GirisEkranı.cs</DependentUpon>
@@ -115,7 +130,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Ekranlar\garson\" />
+    <Folder Include="Ekranlar\Kasa\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
