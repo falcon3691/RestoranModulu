@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace RestoranModulu.Ekranlar.admin
@@ -15,6 +8,19 @@ namespace RestoranModulu.Ekranlar.admin
         public AdminKatEkranı()
         {
             InitializeComponent();
+        }
+        // Filtrele butonu
+        private void button6_Click(object sender, EventArgs e)
+        {
+
+        }
+        // Masa Ekle butonu
+        private void button4_Click(object sender, EventArgs e)
+        {
+            string formAdi = "AdminKatEkranı";
+            AdminMasaEkranı form = new AdminMasaEkranı(formAdi);
+            this.SuspendLayout();
+            form.ShowDialog();
         }
     }
 }

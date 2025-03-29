@@ -9,14 +9,6 @@ namespace RestoranModulu.Ekranlar.admin
         {
             InitializeComponent();
         }
-        // Menu_Geri Dön butonu
-        private void geriDönToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GirisEkranı form = new GirisEkranı();
-            this.Hide();
-            form.ShowDialog();
-            this.Close();
-        }
         // Menu_Kullanıcı_Kullanıcıları düzenle butonu
         private void kullanıcılarıDüzenleToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -29,6 +21,13 @@ namespace RestoranModulu.Ekranlar.admin
         private void katlarToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AdminKatEkranı form = new AdminKatEkranı();
+            form.MdiParent = this;
+            form.Show();
+        }
+        // Menu_Masalar butonu
+        private void masalarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AdminMasaEkranı form = new AdminMasaEkranı();
             form.MdiParent = this;
             form.Show();
         }

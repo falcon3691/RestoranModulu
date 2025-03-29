@@ -73,6 +73,7 @@
             this.masalarToolStripMenuItem.Name = "masalarToolStripMenuItem";
             this.masalarToolStripMenuItem.Size = new System.Drawing.Size(94, 32);
             this.masalarToolStripMenuItem.Text = "Masalar";
+            this.masalarToolStripMenuItem.Click += new System.EventHandler(this.masalarToolStripMenuItem_Click);
             // 
             // kullanıcılarToolStripMenuItem
             // 
@@ -123,9 +124,7 @@
             // geriDönToolStripMenuItem
             // 
             this.geriDönToolStripMenuItem.Name = "geriDönToolStripMenuItem";
-            this.geriDönToolStripMenuItem.Size = new System.Drawing.Size(104, 32);
-            this.geriDönToolStripMenuItem.Text = "Geri Dön";
-            this.geriDönToolStripMenuItem.Click += new System.EventHandler(this.geriDönToolStripMenuItem_Click);
+            this.geriDönToolStripMenuItem.Size = new System.Drawing.Size(14, 32);
             // 
             // AdminAnaEkranı
             // 
@@ -133,7 +132,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.menuStrip1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "AdminAnaEkranı";
