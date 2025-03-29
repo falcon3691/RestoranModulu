@@ -117,6 +117,7 @@
             this.menüToolStripMenuItem.Name = "menüToolStripMenuItem";
             this.menüToolStripMenuItem.Size = new System.Drawing.Size(76, 32);
             this.menüToolStripMenuItem.Text = "Menü";
+            this.menüToolStripMenuItem.Click += new System.EventHandler(this.menüToolStripMenuItem_Click);
             // 
             // mutfakToolStripMenuItem
             // 
