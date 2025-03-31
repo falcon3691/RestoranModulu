@@ -7,14 +7,7 @@ namespace RestoranModulu.Ekranlar.admin
     {
         // Kullanıcı bilgileri değişkenleri.
         int kullaniciID = 0;
-        string adiSoyadi = null;
-        string telefon = null;
-        string eMail = null;
-        string kullaniciAdi = null;
-        string parola = null;
-        string rolID = null;
-        string durumu = null;
-        string aciklama = null;
+        string adiSoyadi, telefon, eMail, kullaniciAdi, parola, rolID, durumu, aciklama = null;
 
         VTKullanicilar vt = new VTKullanicilar();
 
@@ -22,21 +15,21 @@ namespace RestoranModulu.Ekranlar.admin
         {
             InitializeComponent();
             // "Kullanicilar" tablosundaki verileri listeler.
-            dataGridView1.DataSource = vt.Listele("Kullanicilar");
+            dataGridView1.DataSource = vt.Listele();
             temizle();
         }
 
         // Yeni Kullanıcı Ekle butonu
         private void button1_Click(object sender, System.EventArgs e)
         {
-            string mesaj = boslukKontrolu1();
+            string mesaj = boslukKontrolu();
             if (mesaj == null)
             {
                 degerAtama();
                 // Kullanıcı ekleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
                 if (vt.KullaniciEkle(adiSoyadi, kullaniciAdi, parola, int.Parse(rolID), byte.Parse(durumu), aciklama, telefon, eMail))
                 {
-                    dataGridView1.DataSource = vt.Listele("Kullanicilar");
+                    dataGridView1.DataSource = vt.Listele();
                     temizle();
                 }
 
@@ -48,13 +41,13 @@ namespace RestoranModulu.Ekranlar.admin
         // Kullanıcıyı Güncelle butonu
         private void button3_Click(object sender, System.EventArgs e)
         {
-            // Kullanıcı güncelleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
             if (kullaniciID > 0)
             {
                 degerAtama();
+                // Kullanıcı güncelleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
                 if (vt.KullaniciGuncelle(kullaniciID, adiSoyadi, kullaniciAdi, parola, int.Parse(rolID), byte.Parse(durumu), aciklama, telefon, eMail))
                 {
-                    dataGridView1.DataSource = vt.Listele("Kullanicilar");
+                    dataGridView1.DataSource = vt.Listele();
                     temizle();
                 }
             }
@@ -65,13 +58,13 @@ namespace RestoranModulu.Ekranlar.admin
         // Kullanıcıyı Sil butonu
         private void button4_Click(object sender, System.EventArgs e)
         {
-            // Kullanıcı silme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
             if (kullaniciID > 0)
             {
                 degerAtama();
+                // Kullanıcı silme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
                 if (vt.KullaniciSil(kullaniciID))
                 {
-                    dataGridView1.DataSource = vt.Listele("Kullanicilar");
+                    dataGridView1.DataSource = vt.Listele();
                     temizle();
                 }
             }
@@ -106,14 +99,14 @@ namespace RestoranModulu.Ekranlar.admin
             if (vt.kullaniciFiltrele(adiSoyadi, kullaniciAdi, parola, rolID, durumu, aciklama, telefon, eMail) != null)
                 dataGridView1.DataSource = vt.kullaniciFiltrele(adiSoyadi, kullaniciAdi, parola, rolID, durumu, aciklama, telefon, eMail);
             else
-                dataGridView1.DataSource = vt.Listele("Kullanicilar");
+                dataGridView1.DataSource = vt.Listele();
 
         }
 
         // Hepsini Listele butonu
         private void button6_Click(object sender, System.EventArgs e)
         {
-            dataGridView1.DataSource = vt.Listele("Kullanicilar");
+            dataGridView1.DataSource = vt.Listele();
             temizle();
         }
 
@@ -172,7 +165,7 @@ namespace RestoranModulu.Ekranlar.admin
         }
 
         // Veri tablosunda NULL değer alamayan sütunlar için gerekli boşluk kontrolleri yapılır.
-        public string boslukKontrolu1()
+        public string boslukKontrolu()
         {
             string mesaj;
             List<string> hataMesajlari = new List<string>();

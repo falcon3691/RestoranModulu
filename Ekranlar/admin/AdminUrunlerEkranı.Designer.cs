@@ -46,6 +46,8 @@
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textBox5 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -62,18 +64,19 @@
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.button1.Location = new System.Drawing.Point(321, 12);
+            this.button1.Location = new System.Drawing.Point(669, 12);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(168, 38);
+            this.button1.Size = new System.Drawing.Size(208, 38);
             this.button1.TabIndex = 1;
             this.button1.Text = "Yeni Ürün Ekle";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // comboBox1
             // 
             this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(120, 159);
+            this.comboBox1.Location = new System.Drawing.Point(450, 51);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(194, 33);
             this.comboBox1.TabIndex = 2;
@@ -81,12 +84,16 @@
             // dataGridView1
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(12, 334);
+            this.dataGridView1.Location = new System.Drawing.Point(12, 234);
+            this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
+            this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(477, 238);
+            this.dataGridView1.Size = new System.Drawing.Size(1022, 338);
             this.dataGridView1.TabIndex = 3;
+            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             // 
             // textBox1
             // 
@@ -130,7 +137,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label5.Location = new System.Drawing.Point(15, 163);
+            this.label5.Location = new System.Drawing.Point(334, 56);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(81, 25);
             this.label5.TabIndex = 8;
@@ -140,7 +147,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label6.Location = new System.Drawing.Point(15, 198);
+            this.label6.Location = new System.Drawing.Point(334, 91);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(92, 25);
             this.label6.TabIndex = 9;
@@ -149,7 +156,7 @@
             // textBox2
             // 
             this.textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.textBox2.Location = new System.Drawing.Point(120, 198);
+            this.textBox2.Location = new System.Drawing.Point(450, 90);
             this.textBox2.Multiline = true;
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(194, 66);
@@ -183,48 +190,72 @@
             // button2
             // 
             this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.button2.Location = new System.Drawing.Point(321, 60);
+            this.button2.Location = new System.Drawing.Point(669, 60);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(168, 38);
+            this.button2.Size = new System.Drawing.Size(208, 38);
             this.button2.TabIndex = 14;
             this.button2.Text = "Ürünü Güncelle";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button3
             // 
             this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.button3.Location = new System.Drawing.Point(321, 108);
+            this.button3.Location = new System.Drawing.Point(669, 108);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(168, 38);
+            this.button3.Size = new System.Drawing.Size(208, 38);
             this.button3.TabIndex = 15;
             this.button3.Text = "Ürünü Sil";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button4
             // 
             this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.button4.Location = new System.Drawing.Point(55, 279);
+            this.button4.Location = new System.Drawing.Point(20, 179);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(171, 49);
             this.button4.TabIndex = 16;
             this.button4.Text = "Ürünleri Filtrele";
             this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button5
             // 
             this.button5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.button5.Location = new System.Drawing.Point(301, 279);
+            this.button5.Location = new System.Drawing.Point(266, 179);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(147, 49);
+            this.button5.Size = new System.Drawing.Size(208, 49);
             this.button5.TabIndex = 17;
             this.button5.Text = "Hepsini Listele";
             this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label7.Location = new System.Drawing.Point(334, 17);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(110, 25);
+            this.label7.TabIndex = 19;
+            this.label7.Text = "Resim Yolu";
+            // 
+            // textBox5
+            // 
+            this.textBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.textBox5.Location = new System.Drawing.Point(450, 10);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.Size = new System.Drawing.Size(194, 30);
+            this.textBox5.TabIndex = 20;
             // 
             // AdminUrunlerEkranı
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(505, 584);
+            this.ClientSize = new System.Drawing.Size(1046, 584);
+            this.Controls.Add(this.textBox5);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
@@ -271,5 +302,7 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox textBox5;
     }
 }

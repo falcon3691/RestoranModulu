@@ -4,16 +4,16 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 
-public class VTKullanicilar
+public class VTUrunler
 {
     // Veri tabanı bağlantısı.
     public string baglantiKodu = "Data Source=DESKTOP-HSH38D0;Initial Catalog=RestoranModulu;Integrated Security=True";
 
-    // Sadece verilen tablo üzerindeki veriler çeker ve Data Table olarak geri döndürür.
+    // Tablo üzerindeki verileri çeker ve Data Table olarak geri döndürür.
     public DataTable Listele()
     {
         SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"SELECT * FROM Kullanicilar";
+        string sqlKomutu = $"SELECT * FROM Urunler";
         SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
         try
         {
@@ -31,14 +31,12 @@ public class VTKullanicilar
         }
         return null;
     }
-
-    // "Kullanicilar" tablosuna veri ekler.
-    public bool KullaniciEkle(string adiSoyadi, string kullaniciAdi, string parola, int rolID, byte durumu = 1,
-                              string aciklama = null, string telefon = null, string eMail = null)
+    public bool urunEkle(string adi, int kategoriID, int fiyati, int miktar, string durumu = null,
+                              string resimYolu = null, string aciklama = null)
     {
         SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"INSERT INTO Kullanicilar(adiSoyadi, telefon, eMail, kullaniciAdi, parola, rolID, durumu, aciklama)" +
-                                          $" VALUES('{adiSoyadi}', '{telefon}', '{eMail}', '{kullaniciAdi}', '{parola}', '{rolID}', '{durumu}', '{aciklama}')";
+        string sqlKomutu = $"INSERT INTO Urunler(adi, kategoriID, fiyati, miktar, resimYolu, durumu, aciklama)" +
+                                          $" VALUES('{adi}', '{kategoriID}', '{fiyati}', '{miktar}', '{resimYolu}', '{durumu}', '{aciklama}')";
         try
         {
 
@@ -47,10 +45,10 @@ public class VTKullanicilar
             int sonuc = komut.ExecuteNonQuery();
             baglanti.Close();
             if (sonuc == 1)
-                Console.Out.WriteLine("Kullanıcı başarılı bir şekilde eklendi");
+                Console.Out.WriteLine("Ürün başarılı bir şekilde eklendi");
             else
             {
-                MessageBox.Show("Kullanıcı eklenemedi.");
+                MessageBox.Show("Ürün eklenemedi.");
                 return false;
             }
         }
@@ -63,14 +61,14 @@ public class VTKullanicilar
         return true;
     }
 
-    // "Kullanicilar" tablosu içerisinde, ID değeri verilen kullanıcının bilgilerini günceller.
-    public bool KullaniciGuncelle(int kullaniciID, string adiSoyadi, string kullaniciAdi, string parola, int rolID, byte durumu = 1,
-                              string aciklama = null, string telefon = null, string eMail = null)
+    // "Urunler" tablosu içerisinde, ID değeri verilen ürünün bilgilerini günceller.
+    public bool urunGuncelle(int urunID, string adi, int kategoriID, int fiyati, int miktar, string durumu = null,
+                              string resimYolu = null, string aciklama = null)
     {
         SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"UPDATE Kullanicilar " +
-                           $"SET adiSoyadi='{adiSoyadi}', telefon='{telefon}', eMail='{eMail}', kullaniciAdi='{kullaniciAdi}', parola='{parola}', rolID='{rolID}', durumu='{durumu}', aciklama='{aciklama}' " +
-                           $"WHERE kullaniciID='{kullaniciID}'";
+        string sqlKomutu = $"UPDATE Urunler " +
+                           $"SET adi='{adi}', kategoriID='{kategoriID}', fiyati='{fiyati}', miktar='{miktar}', durumu='{durumu}', resimYolu='{resimYolu}', aciklama='{aciklama} '" +
+                           $"WHERE urunID='{urunID}'";
         try
         {
 
@@ -79,10 +77,10 @@ public class VTKullanicilar
             int sonuc = komut.ExecuteNonQuery();
             baglanti.Close();
             if (sonuc == 1)
-                Console.Out.WriteLine("Kullanıcı bilgileri başarılı bir şekilde güncellendi");
+                Console.Out.WriteLine("Ürün bilgileri başarılı bir şekilde güncellendi");
             else
             {
-                MessageBox.Show("Kullanıcı bilgileri güncellenemedi.");
+                MessageBox.Show("Ürün bilgileri güncellenemedi.");
                 return false;
             }
         }
@@ -95,11 +93,11 @@ public class VTKullanicilar
         return true;
     }
 
-    // "Kullanicilar" tablosu içerisinde, ID değeri verilen kullanıcının bilgilerini siler.
-    public bool KullaniciSil(int kullaniciID)
+    // "Urunler" tablosu içerisinde, ID değeri verilen ürünün bilgilerini siler.
+    public bool urunSil(int urunID)
     {
         SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"DELETE FROM Kullanicilar WHERE kullaniciID='{kullaniciID}'";
+        string sqlKomutu = $"DELETE FROM Urunler WHERE urunID='{urunID}'";
         try
         {
 
@@ -108,10 +106,10 @@ public class VTKullanicilar
             int sonuc = komut.ExecuteNonQuery();
             baglanti.Close();
             if (sonuc == 1)
-                Console.Out.WriteLine("Kullanıcı bilgileri başarılı bir şekilde silindi");
+                Console.Out.WriteLine("Ürün bilgileri başarılı bir şekilde silindi");
             else
             {
-                MessageBox.Show("Kullanıcı bilgileri silinemedi.");
+                MessageBox.Show("Ürün bilgileri silinemedi.");
                 return false;
             }
         }
@@ -124,58 +122,53 @@ public class VTKullanicilar
         return true;
     }
 
-    //  "Kullanicilar" tablosu içinde verilen değerlere göre filtreleme yapar.
-    public DataTable kullaniciFiltrele(string adiSoyadi = null, string kullaniciAdi = null, string parola = null, string rolID = null,
-                                   string durumu = null, string aciklama = null, string telefon = null, string eMail = null)
+    //  "Urunler" tablosu içinde verilen değerlere göre filtreleme yapar.
+    public DataTable urunFiltrele(string adi = null, int kategoriID = 0, int fiyati = 0, int miktar = 0,
+                                   string durumu = null, string resimYolu = null, string aciklama = null)
     {
         using (SqlConnection baglanti = new SqlConnection(baglantiKodu))
         {
             List<string> conditions = new List<string>(); // Filtreleri tutacak liste
             SqlCommand komut = new SqlCommand();
 
-            if (!string.IsNullOrEmpty(adiSoyadi))
+            if (!string.IsNullOrEmpty(adi))
             {
-                conditions.Add("adiSoyadi LIKE @adiSoyadi");
-                komut.Parameters.AddWithValue("@adiSoyadi", "%" + adiSoyadi + "%");
+                conditions.Add("adi LIKE @adi");
+                komut.Parameters.AddWithValue("@adi", "%" + adi + "%");
             }
-            if (!string.IsNullOrEmpty(kullaniciAdi))
+            if (!string.IsNullOrEmpty(kategoriID.ToString()))
             {
-                conditions.Add("kullaniciAdi LIKE @kullaniciAdi");
-                komut.Parameters.AddWithValue("@kullaniciAdi", "%" + kullaniciAdi + "%");
+                conditions.Add("kategoriID LIKE @kategoriID");
+                komut.Parameters.AddWithValue("@kategoriID", kategoriID);
             }
-            if (!string.IsNullOrEmpty(parola))
+            if (!string.IsNullOrEmpty(fiyati.ToString()))
             {
-                conditions.Add("parola LIKE @parola");
-                komut.Parameters.AddWithValue("@parola", "%" + parola + "%");
+                conditions.Add("fiyati LIKE @fiyati");
+                komut.Parameters.AddWithValue("@fiyati", fiyati);
             }
-            if (!string.IsNullOrEmpty(rolID))
+            if (!string.IsNullOrEmpty(miktar.ToString()))
             {
-                conditions.Add("rolID = @rolID");
-                komut.Parameters.AddWithValue("@rolID", int.Parse(rolID));
+                conditions.Add("miktar = @miktar");
+                komut.Parameters.AddWithValue("@miktar", miktar);
             }
             if (!string.IsNullOrEmpty(durumu))
             {
                 conditions.Add("durumu = @durumu");
-                komut.Parameters.AddWithValue("@durumu", byte.Parse(durumu));
+                komut.Parameters.AddWithValue("@durumu", durumu);
+            }
+            if (!string.IsNullOrEmpty(resimYolu))
+            {
+                conditions.Add("resimYolu LIKE @resimYolu");
+                komut.Parameters.AddWithValue("@resimYolu", "%" + resimYolu + "%");
             }
             if (!string.IsNullOrEmpty(aciklama))
             {
                 conditions.Add("aciklama LIKE @aciklama");
                 komut.Parameters.AddWithValue("@aciklama", "%" + aciklama + "%");
             }
-            if (!string.IsNullOrEmpty(telefon))
-            {
-                conditions.Add("telefon LIKE @telefon");
-                komut.Parameters.AddWithValue("@telefon", "%" + telefon + "%");
-            }
-            if (!string.IsNullOrEmpty(eMail))
-            {
-                conditions.Add("eMail LIKE @eMail");
-                komut.Parameters.AddWithValue("@eMail", "%" + eMail + "%");
-            }
 
             // SQL Sorgusunu oluşturma
-            string sqlKomutu = "SELECT * FROM Kullanicilar";
+            string sqlKomutu = "SELECT * FROM Urunler";
             if (conditions.Count > 0)
             {
                 sqlKomutu += " WHERE " + string.Join(" OR ", conditions); // OR yerine AND kullanıldı, istenirse değiştirilebilir
@@ -196,7 +189,7 @@ public class VTKullanicilar
 
                 if (dt.Rows.Count == 0)
                 {
-                    MessageBox.Show("Girilen bilgilere göre bir kullanıcı bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Girilen bilgilere göre bir ürün bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return null;
                 }
                 else
@@ -212,4 +205,5 @@ public class VTKullanicilar
             }
         }
     }
+
 }

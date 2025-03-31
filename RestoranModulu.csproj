@@ -127,6 +127,8 @@
     </Compile>
     <Compile Include="VeriTabaniIslemleri\VTKullanicilar.cs" />
     <Compile Include="VeriTabaniIslemleri\VTGiris.cs" />
+    <Compile Include="VeriTabaniIslemleri\VTRoller.cs" />
+    <Compile Include="VeriTabaniIslemleri\VTUrunler.cs" />
     <EmbeddedResource Include="Ekranlar\admin\AdminAnaEkranı.resx">
       <DependentUpon>AdminAnaEkranı.cs</DependentUpon>
     </EmbeddedResource>
