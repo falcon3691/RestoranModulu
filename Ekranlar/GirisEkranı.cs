@@ -18,7 +18,7 @@ namespace RestoranModulu
         {
             /* if (boslukKontrolu())
              {
-                 if (vt.KullaniciListele("Kullanicilar", textBox1.Text, textBox2.Text) != null)
+                 if (vt.KullaniciListele(textBox1.Text, textBox2.Text, 1) != null)
                  {
                      AdminAnaEkranı form = new AdminAnaEkranı();
                      this.Hide();
@@ -34,6 +34,16 @@ namespace RestoranModulu
         // Kasa butonu
         private void button2_Click(object sender, EventArgs e)
         {
+            /* if (boslukKontrolu())
+             {
+                 if (vt.KullaniciListele(textBox1.Text, textBox2.Text, 2) != null)
+                 {
+                     KatEkranı form = new KatEkranı();
+                     this.Hide();
+                     form.ShowDialog();
+                     this.Close();
+                 }
+             }*/
             KatEkranı form = new KatEkranı();
             this.Hide();
             form.ShowDialog();
@@ -42,6 +52,16 @@ namespace RestoranModulu
         // Garson butonu
         private void button3_Click(object sender, EventArgs e)
         {
+            /* if (boslukKontrolu())
+             {
+                 if (vt.KullaniciListele(textBox1.Text, textBox2.Text, 3) != null)
+                 {
+                     KatEkranı form = new KatEkranı();
+                     this.Hide();
+                     form.ShowDialog();
+                     this.Close();
+                 }
+             }*/
             KatEkranı form = new KatEkranı();
             this.Hide();
             form.ShowDialog();
