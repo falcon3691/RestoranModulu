@@ -16,7 +16,7 @@ namespace RestoranModulu.Ekranlar.admin
         string durumu = null;
         string aciklama = null;
 
-        VeriTabani vt = new VeriTabani();
+        VTKullanicilar vt = new VTKullanicilar();
 
         public AdminKullaniciEkranı()
         {
@@ -26,7 +26,123 @@ namespace RestoranModulu.Ekranlar.admin
             temizle();
         }
 
-        // Kullanıcı değişkenlerine atama yapma işlemleri
+        // Yeni Kullanıcı Ekle butonu
+        private void button1_Click(object sender, System.EventArgs e)
+        {
+            string mesaj = boslukKontrolu1();
+            if (mesaj == null)
+            {
+                degerAtama();
+                // Kullanıcı ekleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
+                if (vt.KullaniciEkle(adiSoyadi, kullaniciAdi, parola, int.Parse(rolID), byte.Parse(durumu), aciklama, telefon, eMail))
+                {
+                    dataGridView1.DataSource = vt.Listele("Kullanicilar");
+                    temizle();
+                }
+
+            }
+            else
+                MessageBox.Show(mesaj, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        // Kullanıcıyı Güncelle butonu
+        private void button3_Click(object sender, System.EventArgs e)
+        {
+            // Kullanıcı güncelleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
+            if (kullaniciID > 0)
+            {
+                degerAtama();
+                if (vt.KullaniciGuncelle(kullaniciID, adiSoyadi, kullaniciAdi, parola, int.Parse(rolID), byte.Parse(durumu), aciklama, telefon, eMail))
+                {
+                    dataGridView1.DataSource = vt.Listele("Kullanicilar");
+                    temizle();
+                }
+            }
+            else
+                MessageBox.Show("Kullanıcılar listesi içinden bir kullanıcı şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        // Kullanıcıyı Sil butonu
+        private void button4_Click(object sender, System.EventArgs e)
+        {
+            // Kullanıcı silme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
+            if (kullaniciID > 0)
+            {
+                degerAtama();
+                if (vt.KullaniciSil(kullaniciID))
+                {
+                    dataGridView1.DataSource = vt.Listele("Kullanicilar");
+                    temizle();
+                }
+            }
+            else
+                MessageBox.Show("Kullanıcılar listesi içinden bir kullanıcı şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+        }
+
+        // dataGridView listesinde bulunan bir satıra tıklanınca, o satır içinde bulunan bilgiler ile textBox ve comboBox'ları doldurur.
+        // Ayriyeten kullanıcı üstünde işlem yapmak için kullaniciID değerini alır.
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int satirNo = e.RowIndex;
+            if (satirNo >= 0)
+            {
+                kullaniciID = int.Parse(dataGridView1.Rows[satirNo].Cells[0].Value.ToString());
+                textBox2.Text = dataGridView1.Rows[satirNo].Cells[1].Value.ToString();
+                textBox1.Text = dataGridView1.Rows[satirNo].Cells[2].Value.ToString();
+                textBox3.Text = dataGridView1.Rows[satirNo].Cells[3].Value.ToString();
+                textBox4.Text = dataGridView1.Rows[satirNo].Cells[4].Value.ToString();
+                textBox5.Text = dataGridView1.Rows[satirNo].Cells[5].Value.ToString();
+                comboBox1.Text = dataGridView1.Rows[satirNo].Cells[6].Value.ToString();
+                comboBox2.Text = dataGridView1.Rows[satirNo].Cells[7].Value.ToString();
+                textBox6.Text = dataGridView1.Rows[satirNo].Cells[8].Value.ToString();
+            }
+        }
+
+        // Kullanıcıları Filtrele butonu
+        private void button5_Click(object sender, EventArgs e)
+        {
+            degerAtama();
+            if (vt.kullaniciFiltrele(adiSoyadi, kullaniciAdi, parola, rolID, durumu, aciklama, telefon, eMail) != null)
+                dataGridView1.DataSource = vt.kullaniciFiltrele(adiSoyadi, kullaniciAdi, parola, rolID, durumu, aciklama, telefon, eMail);
+            else
+                dataGridView1.DataSource = vt.Listele("Kullanicilar");
+
+        }
+
+        // Hepsini Listele butonu
+        private void button6_Click(object sender, System.EventArgs e)
+        {
+            dataGridView1.DataSource = vt.Listele("Kullanicilar");
+            temizle();
+        }
+
+        // Hem ekranda ki alanları temizler hem de kullanılan değişkenlerin değerlerini standart konuma getirir.
+        public void temizle()
+        {
+            // Ekranın temizlenmesi.
+            textBox1.Text = null;
+            textBox2.Text = null;
+            textBox3.Text = null;
+            textBox4.Text = null;
+            textBox5.Text = null;
+            textBox6.Text = null;
+            comboBox1.Text = null;
+            comboBox2.Text = null;
+
+            // Kullanıcı değişkenlerinin temizlenmesi.
+            kullaniciID = 0;
+            adiSoyadi = null;
+            telefon = null;
+            eMail = null;
+            kullaniciAdi = null;
+            parola = null;
+            rolID = null;
+            durumu = null;
+            aciklama = null;
+        }
+
+        // Kullanıcı değişkenlerine değer atama işlemleri
         public void degerAtama()
         {
             if (!string.IsNullOrEmpty(textBox2.Text))
@@ -55,86 +171,6 @@ namespace RestoranModulu.Ekranlar.admin
             else durumu = null;
         }
 
-        // Yeni Kullanıcı Ekle butonu
-        private void button1_Click(object sender, System.EventArgs e)
-        {
-            string mesaj = boslukKontrolu1();
-            if (mesaj == null)
-            {
-                degerAtama();
-                // Kullanıcı ekleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.KullaniciEkle(adiSoyadi, kullaniciAdi, parola, int.Parse(rolID), byte.Parse(durumu), aciklama, telefon, eMail))
-                {
-                    dataGridView1.DataSource = vt.Listele("Kullanicilar");
-                    temizle();
-                }
-
-            }
-            else
-                MessageBox.Show(mesaj, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        // dataGridView listesinde bulunan bir satıra tıklanınca, o satır içinde bulunan bilgiler ile textBox ve comboBox'ları doldurur.
-        // Ayriyeten kullanıcı üstünde işlem yapmak için kullaniciID değerini alır.
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            int satirNo = e.RowIndex;
-            if (satirNo >= 0)
-            {
-                kullaniciID = int.Parse(dataGridView1.Rows[satirNo].Cells[0].Value.ToString());
-                textBox2.Text = dataGridView1.Rows[satirNo].Cells[1].Value.ToString();
-                textBox1.Text = dataGridView1.Rows[satirNo].Cells[2].Value.ToString();
-                textBox3.Text = dataGridView1.Rows[satirNo].Cells[3].Value.ToString();
-                textBox4.Text = dataGridView1.Rows[satirNo].Cells[4].Value.ToString();
-                textBox5.Text = dataGridView1.Rows[satirNo].Cells[5].Value.ToString();
-                comboBox1.Text = dataGridView1.Rows[satirNo].Cells[6].Value.ToString();
-                comboBox2.Text = dataGridView1.Rows[satirNo].Cells[7].Value.ToString();
-                textBox6.Text = dataGridView1.Rows[satirNo].Cells[8].Value.ToString();
-            }
-        }
-
-        // Kullanıcıyı Güncelle butonu
-        private void button3_Click(object sender, System.EventArgs e)
-        {
-            // Kullanıcı güncelleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-            if (kullaniciID > 0)
-            {
-                degerAtama();
-                if (vt.KullaniciGuncelle(kullaniciID, adiSoyadi, kullaniciAdi, parola, int.Parse(rolID), byte.Parse(durumu), aciklama, telefon, eMail))
-                {
-                    dataGridView1.DataSource = vt.Listele("Kullanicilar");
-                    temizle();
-                }
-            }
-            else
-                MessageBox.Show("Kullanıcılar listesi içinden bir kullanıcı şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        // Hepsini Listele butonu
-        private void button6_Click(object sender, System.EventArgs e)
-        {
-            dataGridView1.DataSource = vt.Listele("Kullanicilar");
-            temizle();
-        }
-
-        // Kullanıcıyı Sil butonu
-        private void button4_Click(object sender, System.EventArgs e)
-        {
-            // Kullanıcı silme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-            if (kullaniciID > 0)
-            {
-                degerAtama();
-                if (vt.KullaniciSil(kullaniciID))
-                {
-                    dataGridView1.DataSource = vt.Listele("Kullanicilar");
-                    temizle();
-                }
-            }
-            else
-                MessageBox.Show("Kullanıcılar listesi içinden bir kullanıcı şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-        }
-
         // Veri tablosunda NULL değer alamayan sütunlar için gerekli boşluk kontrolleri yapılır.
         public string boslukKontrolu1()
         {
@@ -157,40 +193,5 @@ namespace RestoranModulu.Ekranlar.admin
             return null;
         }
 
-        // Kullanıcıları Filtrele butonu
-        private void button5_Click(object sender, EventArgs e)
-        {
-            degerAtama();
-            if (vt.kullaniciFiltrele(adiSoyadi, kullaniciAdi, parola, rolID, durumu, aciklama, telefon, eMail) != null)
-                dataGridView1.DataSource = vt.kullaniciFiltrele(adiSoyadi, kullaniciAdi, parola, rolID, durumu, aciklama, telefon, eMail);
-            else
-                dataGridView1.DataSource = vt.Listele("Kullanicilar");
-
-        }
-
-        // Hem ekranda ki alanları temizler hem de kullanılan değişkenlerin değerlerini standart konuma getirir.
-        public void temizle()
-        {
-            // Ekranın temizlenmesi.
-            textBox1.Text = null;
-            textBox2.Text = null;
-            textBox3.Text = null;
-            textBox4.Text = null;
-            textBox5.Text = null;
-            textBox6.Text = null;
-            comboBox1.Text = null;
-            comboBox2.Text = null;
-
-            // Kullanıcı değişkenlerinin temizlenmesi.
-            kullaniciID = 0;
-            adiSoyadi = null;
-            telefon = null;
-            eMail = null;
-            kullaniciAdi = null;
-            parola = null;
-            rolID = null;
-            durumu = null;
-            aciklama = null;
-        }
     }
 }

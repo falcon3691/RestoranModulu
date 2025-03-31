@@ -3,7 +3,7 @@ namespace RestoranModulu.Ekranlar.admin
 {
     public partial class AdminRollerEkranı : Form
     {
-        VeriTabani vt = new VeriTabani();
+        VTGiris vt = new VTGiris();
         public AdminRollerEkranı()
         {
             InitializeComponent();

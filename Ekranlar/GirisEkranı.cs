@@ -7,7 +7,7 @@ namespace RestoranModulu
     public partial class GirisEkranı : Form
     {
 
-        VeriTabani vt = new VeriTabani();
+        VTGiris vt = new VTGiris();
         public GirisEkranı()
         {
             InitializeComponent();
