@@ -24,6 +24,7 @@ namespace RestoranModulu.Ekranlar.admin
             form.MdiParent = this;
             form.Show();
         }
+
         // Menu_Masalar butonu
         private void masalarToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -31,6 +32,7 @@ namespace RestoranModulu.Ekranlar.admin
             form.MdiParent = this;
             form.Show();
         }
+
         // Menu_Rolleri Düzenle butonu
         private void rolleriDüzenleToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -39,14 +41,7 @@ namespace RestoranModulu.Ekranlar.admin
             form.Show();
         }
 
-        // Menu_Ürünler butonu
-        private void ürünlerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AdminUrunlerEkranı form = new AdminUrunlerEkranı();
-            form.MdiParent = this;
-            form.Show();
-        }
-
+        // Menü_Siparişler butonu
         private void siparişlerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AdminSiparislerEkranı form = new AdminSiparislerEkranı();
@@ -54,9 +49,26 @@ namespace RestoranModulu.Ekranlar.admin
             form.Show();
         }
 
+        // Menü_Menü butonu
         private void menüToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AdminMenuEkranı form = new AdminMenuEkranı();
+            form.MdiParent = this;
+            form.Show();
+        }
+
+        // Menu_Ürünler_Ürünleri Düzenle butonu
+        private void ürünleriDüzenleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AdminUrunlerEkranı form = new AdminUrunlerEkranı();
+            form.MdiParent = this;
+            form.Show();
+        }
+
+        // Menü_Ürünler_Kategorileri Düzenle butonu
+        private void kategorileriDüzenleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AdminKategoriEkranı form = new AdminKategoriEkranı();
             form.MdiParent = this;
             form.Show();
         }

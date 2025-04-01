@@ -52,6 +52,12 @@
     <Compile Include="Ekranlar\admin\AdminAnaEkranı.Designer.cs">
       <DependentUpon>AdminAnaEkranı.cs</DependentUpon>
     </Compile>
+    <Compile Include="Ekranlar\admin\AdminKategoriEkranı.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ekranlar\admin\AdminKategoriEkranı.Designer.cs">
+      <DependentUpon>AdminKategoriEkranı.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ekranlar\admin\AdminKatEkranı.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -125,6 +131,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>RestoranModuluDataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="VeriTabaniIslemleri\VTKategoriler.cs" />
     <Compile Include="VeriTabaniIslemleri\VTKatlar.cs" />
     <Compile Include="VeriTabaniIslemleri\VTKullanicilar.cs" />
     <Compile Include="VeriTabaniIslemleri\VTGiris.cs" />
@@ -133,6 +140,9 @@
     <Compile Include="VeriTabaniIslemleri\VTUrunler.cs" />
     <EmbeddedResource Include="Ekranlar\admin\AdminAnaEkranı.resx">
       <DependentUpon>AdminAnaEkranı.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ekranlar\admin\AdminKategoriEkranı.resx">
+      <DependentUpon>AdminKategoriEkranı.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Ekranlar\admin\AdminKatEkranı.resx">
       <DependentUpon>AdminKatEkranı.cs</DependentUpon>

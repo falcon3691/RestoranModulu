@@ -15,6 +15,7 @@ namespace RestoranModulu.Ekranlar.admin
         public AdminMasaEkranı(string formAdi = null, int katID = 0)
         {
             InitializeComponent();
+            // Bu ekran direkt olarak açılmaz, AdminKatEkranı üzerinden açılırsa, yapılacak özel işlemler
             if (formAdi == "AdminKatEkranı")
             {
                 this.katID = katID;
@@ -133,7 +134,7 @@ namespace RestoranModulu.Ekranlar.admin
         }
 
         // dataGridView listesinde bulunan bir satıra tıklanınca, o satır içinde bulunan bilgiler ile textBox ve comboBox'ları doldurur.
-        // Ayriyeten ürün üstünde işlem yapmak için urunID değerini alır.
+        // Ayriyeten masa üstünde işlem yapmak için masaID değerini alır.
         private void dataGridView1_CellClick_1(object sender, DataGridViewCellEventArgs e)
         {
             int satirNo = e.RowIndex;
