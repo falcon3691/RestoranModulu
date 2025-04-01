@@ -68,26 +68,25 @@
             this.button6.TabIndex = 29;
             this.button6.Text = "Masaları Filtrele";
             this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // button5
             // 
-            this.button5.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.button5.Location = new System.Drawing.Point(221, 272);
+            this.button5.Location = new System.Drawing.Point(0, 0);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(253, 46);
-            this.button5.TabIndex = 28;
-            this.button5.Text = "Boş Masaları Listele";
-            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.TabIndex = 39;
             // 
             // button4
             // 
             this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.button4.Location = new System.Drawing.Point(480, 272);
+            this.button4.Location = new System.Drawing.Point(221, 272);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(209, 46);
             this.button4.TabIndex = 27;
             this.button4.Text = "Hepsini Listele";
             this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button3
             // 
@@ -98,6 +97,7 @@
             this.button3.TabIndex = 26;
             this.button3.Text = "Masayı Sil";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button2
             // 
@@ -142,11 +142,15 @@
             // 
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Location = new System.Drawing.Point(12, 324);
+            this.dataGridView1.MultiSelect = false;
             this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
+            this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.Size = new System.Drawing.Size(677, 308);
             this.dataGridView1.TabIndex = 19;
+            this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick_1);
             // 
             // comboBox1
             // 
@@ -174,6 +178,7 @@
             this.button1.TabIndex = 16;
             this.button1.Text = "Yeni Masa Ekle";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // label1
             // 
@@ -266,6 +271,7 @@
             // 
             this.panel4.Controls.Add(this.label8);
             this.panel4.Controls.Add(this.textBox5);
+            this.panel4.Enabled = false;
             this.panel4.Location = new System.Drawing.Point(29, 138);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(440, 89);
@@ -275,29 +281,34 @@
             // label8
             // 
             this.label8.AutoSize = true;
+            this.label8.Enabled = false;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.label8.Location = new System.Drawing.Point(-5, 11);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(110, 29);
             this.label8.TabIndex = 22;
             this.label8.Text = "Açıklama";
+            this.label8.Visible = false;
             // 
             // textBox5
             // 
+            this.textBox5.Enabled = false;
             this.textBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.textBox5.Location = new System.Drawing.Point(191, 12);
             this.textBox5.Multiline = true;
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(236, 61);
             this.textBox5.TabIndex = 24;
+            this.textBox5.Visible = false;
             // 
             // AdminMasaEkranı
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(706, 651);
-            this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel1);
+            this.Controls.Add(this.panel3);
+            this.Controls.Add(this.panel4);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
@@ -310,7 +321,6 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.panel2);
-            this.Controls.Add(this.panel3);
             this.Name = "AdminMasaEkranı";
             this.Text = "AdminMasaEkranı";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

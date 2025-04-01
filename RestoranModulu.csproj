@@ -125,8 +125,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>RestoranModuluDataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="VeriTabaniIslemleri\VTKatlar.cs" />
     <Compile Include="VeriTabaniIslemleri\VTKullanicilar.cs" />
     <Compile Include="VeriTabaniIslemleri\VTGiris.cs" />
+    <Compile Include="VeriTabaniIslemleri\VTMasa.cs" />
     <Compile Include="VeriTabaniIslemleri\VTRoller.cs" />
     <Compile Include="VeriTabaniIslemleri\VTUrunler.cs" />
     <EmbeddedResource Include="Ekranlar\admin\AdminAnaEkranı.resx">

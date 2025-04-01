@@ -5,6 +5,12 @@ namespace RestoranModulu.Ekranlar.admin
 {
     public partial class AdminKatEkranı : Form
     {
+        VTKatlar vt = new VTKatlar();
+
+        // Ürün bilgileri değişkenleri
+        int katID = 0;
+        string adi, masalarID, durumu, aciklama = null;
+
         public AdminKatEkranı()
         {
             InitializeComponent();
@@ -17,10 +23,14 @@ namespace RestoranModulu.Ekranlar.admin
         // Masa Ekle butonu
         private void button4_Click(object sender, EventArgs e)
         {
-            string formAdi = "AdminKatEkranı";
-            AdminMasaEkranı form = new AdminMasaEkranı(formAdi);
-            this.SuspendLayout();
-            form.ShowDialog();
+            if (katID > 0)
+            {
+                AdminMasaEkranı form = new AdminMasaEkranı("AdminKatEkranı", katID);
+                this.SuspendLayout();
+                form.ShowDialog();
+            }
+            else
+                MessageBox.Show("Katlar listesi içinden bir kat şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

@@ -1,32 +1,225 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace RestoranModulu.Ekranlar.admin
 {
     public partial class AdminMasaEkranı : Form
     {
-        public AdminMasaEkranı(string formAdi = null)
+        VTMasa vt = new VTMasa();
+
+        // Masa değişken bilgileri.
+        string adi, masaDurumu, aciklama = null;
+        int masaID, sandalyeSayisi, katID = 0;
+
+        public AdminMasaEkranı(string formAdi = null, int katID = 0)
         {
             InitializeComponent();
             if (formAdi == "AdminKatEkranı")
             {
+                this.katID = katID;
+
+                // Panel 2, Panel 4 ve Masayı Kata Ekle butonu gösterilir ve etkinleştirilir.
                 panel2.Parent = this;
                 panel4.Parent = this;
+
                 panel2.Visible = true;
                 panel4.Visible = true;
+                panel2.Enabled = true;
+                panel4.Enabled = true;
+
+                button7.Visible = true;
+                button7.Enabled = true;
+
+                // Panel 1, Panel 3, Masayı Güncelle butonu ve Masayı Sil butonu gizlenir ve etkisiz hale getirilir.
                 panel1.Visible = false;
                 panel3.Visible = false;
+                panel1.Enabled = false;
+                panel3.Enabled = false;
+
+                button3.Visible = false;
+                button4.Visible = false;
+                button3.Enabled = false;
+                button4.Enabled = false;
             }
+            dataGridView1.DataSource = vt.Listele();
         }
+
+        // Yeni Masa Ekle butonu
+        private void button1_Click(object sender, System.EventArgs e)
+        {
+            string mesaj = boslukKontrolu();
+            if (mesaj == null)
+            {
+                degerAtama();
+                // Ürün ekleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
+                if (vt.masaEkle(adi, sandalyeSayisi, masaDurumu, katID, aciklama))
+                {
+                    dataGridView1.DataSource = vt.Listele();
+                    temizle();
+                }
+
+            }
+            else
+                MessageBox.Show(mesaj, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
         // Masayı Güncelle butonu
         private void button2_Click(object sender, System.EventArgs e)
         {
-
+            if (masaID > 0)
+            {
+                degerAtama();
+                // Masa güncelleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
+                if (vt.masaGuncelle(masaID, adi, sandalyeSayisi, masaDurumu, aciklama, katID))
+                {
+                    dataGridView1.DataSource = vt.Listele();
+                    temizle();
+                }
+            }
+            else
+                MessageBox.Show("Masalar listesi içinden bir masa şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+
         // Masayı Kata Ekle butonu
         private void button7_Click(object sender, System.EventArgs e)
         {
-
+            Console.WriteLine(masaID.ToString() + katID.ToString());
+            if (masaID > 0 && katID > 0)
+            {
+                // Masayı kata ekleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
+                if (vt.masayiKataEkle(masaID, katID))
+                {
+                    dataGridView1.DataSource = vt.Listele();
+                    temizle();
+                }
+            }
+            else
+                MessageBox.Show("Masalar listesi içinden bir masa şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
+        // Masayı Sil butonu
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (masaID > 0)
+            {
+                degerAtama();
+                // Masa silme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
+                if (vt.masaSil(masaID))
+                {
+                    dataGridView1.DataSource = vt.Listele();
+                    temizle();
+                }
+            }
+            else
+                MessageBox.Show("Masalar listesi içinden bir masa şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        // Masaları Filtrele butonu
+        private void button6_Click(object sender, EventArgs e)
+        {
+            degerAtama();
+            if (vt.masaFiltrele(adi, sandalyeSayisi, masaDurumu, aciklama, katID) != null)
+                dataGridView1.DataSource = vt.masaFiltrele(adi, sandalyeSayisi, masaDurumu, aciklama, katID);
+            else
+                dataGridView1.DataSource = vt.Listele();
+        }
+
+        // Hepsini Listele butonu
+        private void button4_Click(object sender, EventArgs e)
+        {
+            dataGridView1.DataSource = vt.Listele();
+            temizle();
+        }
+
+        // dataGridView listesinde bulunan bir satıra tıklanınca, o satır içinde bulunan bilgiler ile textBox ve comboBox'ları doldurur.
+        // Ayriyeten ürün üstünde işlem yapmak için urunID değerini alır.
+        private void dataGridView1_CellClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+            int satirNo = e.RowIndex;
+            if (satirNo >= 0)
+            {
+                masaID = int.Parse(dataGridView1.Rows[satirNo].Cells[0].Value.ToString());
+                textBox1.Text = dataGridView1.Rows[satirNo].Cells[1].Value.ToString();
+                textBox2.Text = dataGridView1.Rows[satirNo].Cells[2].Value.ToString();
+                comboBox1.Text = dataGridView1.Rows[satirNo].Cells[3].Value.ToString();
+                if (panel3.Visible == true)
+                {
+                    textBox3.Text = dataGridView1.Rows[satirNo].Cells[4].Value.ToString();
+                    textBox4.Text = dataGridView1.Rows[satirNo].Cells[5].Value.ToString();
+                }
+                else if (panel4.Visible == true)
+                {
+                    textBox5.Text = dataGridView1.Rows[satirNo].Cells[4].Value.ToString();
+                }
+            }
+        }
+
+        // Veri tablosunda NULL değer alamayan sütunlar için gerekli boşluk kontrolleri yapılır.
+        public string boslukKontrolu()
+        {
+            string mesaj;
+            List<string> hataMesajlari = new List<string>();
+            if (string.IsNullOrEmpty(textBox1.Text))
+                hataMesajlari.Add("Ad bilgisi boş bırakılamaz");
+            if (string.IsNullOrEmpty(textBox2.Text))
+                hataMesajlari.Add("Sandalye sayısı belirtilmeli");
+            if (hataMesajlari.Count > 0)
+            {
+                mesaj = string.Join(Environment.NewLine, hataMesajlari);
+                return mesaj;
+            }
+
+            return null;
+        }
+
+        // Hem ekranda ki alanları temizler hem de kullanılan değişkenlerin değerlerini standart konuma getirir.
+        public void temizle()
+        {
+            // Ekranın temizlenmesi.
+            textBox1.Text = null;
+            textBox2.Text = null;
+            textBox3.Text = null;
+            textBox4.Text = null;
+            textBox5.Text = null;
+            comboBox1.Text = null;
+
+            // Kullanıcı değişkenlerinin temizlenmesi.
+            masaID = 0;
+            katID = 0;
+            sandalyeSayisi = 0;
+            adi = null;
+            masaDurumu = null;
+            aciklama = null;
+        }
+
+        // Ürün değişkenlerine değer atama işlemleri
+        public void degerAtama()
+        {
+            if (!string.IsNullOrEmpty(textBox1.Text))
+                adi = textBox1.Text;
+            else adi = null;
+            if (!string.IsNullOrEmpty(comboBox1.Text))
+                masaDurumu = comboBox1.Text;
+            else masaDurumu = null;
+            if (!string.IsNullOrEmpty(textBox2.Text))
+                sandalyeSayisi = int.Parse(textBox2.Text);
+            else sandalyeSayisi = 0;
+            if (panel3.Visible == true)
+            {
+                if (!string.IsNullOrEmpty(textBox4.Text))
+                    katID = int.Parse(textBox4.Text);
+                else katID = 0;
+                if (!string.IsNullOrEmpty(textBox3.Text))
+                    aciklama = textBox3.Text;
+                else aciklama = null;
+            }
+            else if (panel4.Visible == true)
+            {
+                if (!string.IsNullOrEmpty(textBox5.Text))
+                    aciklama = textBox5.Text;
+                else aciklama = null;
+            }
+        }
     }
 }
