@@ -10,10 +10,13 @@ public class VTMasa
     public string baglantiKodu = "Data Source=DESKTOP-HSH38D0;Initial Catalog=RestoranModulu;Integrated Security=True";
 
     // Tablo üzerindeki verileri çeker ve Data Table olarak geri döndürür.
-    public DataTable Listele()
+    public DataTable Listele(bool kosul = false, int katID = 0)
     {
         SqlConnection baglanti = new SqlConnection(baglantiKodu);
         string sqlKomutu = $"SELECT * FROM Masalar";
+
+        if (kosul)
+            sqlKomutu += $" WHERE katID='{katID}'";
 
         SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
         try
@@ -194,6 +197,7 @@ public class VTMasa
         }
     }
 
+    // Belirlenen masanın katID değerine atama yapılır.
     public bool masayiKataEkle(int masaID, int katID)
     {
         SqlConnection baglanti = new SqlConnection(baglantiKodu);
@@ -212,6 +216,37 @@ public class VTMasa
             else
             {
                 MessageBox.Show("Masa kata eklenemedi.");
+                return false;
+            }
+        }
+        catch (Exception hata)
+        {
+            baglanti.Close();
+            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return false;
+        }
+        return true;
+    }
+
+    // Kata ait masalar listesi temizlenir.
+    public bool masalariTemizle(int katID)
+    {
+        SqlConnection baglanti = new SqlConnection(baglantiKodu);
+        string sqlKomutu = $"UPDATE Masalar " +
+                           $"SET katID='{0}' " +
+                           $"WHERE katID='{katID}'";
+        try
+        {
+
+            baglanti.Open();
+            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
+            int sonuc = komut.ExecuteNonQuery();
+            baglanti.Close();
+            if (sonuc >= 1)
+                Console.Out.WriteLine("Masalar başarılı bir şekilde temizlendi");
+            else
+            {
+                MessageBox.Show("Masalar temizlenemedi.");
                 return false;
             }
         }

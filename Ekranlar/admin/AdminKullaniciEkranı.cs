@@ -78,7 +78,7 @@ namespace RestoranModulu.Ekranlar.admin
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int satirNo = e.RowIndex;
-            if (satirNo >= 0)
+            if (satirNo >= 0 && satirNo < (dataGridView1.Rows.Count - 1))
             {
                 kullaniciID = int.Parse(dataGridView1.Rows[satirNo].Cells[0].Value.ToString());
                 textBox2.Text = dataGridView1.Rows[satirNo].Cells[1].Value.ToString();

@@ -20,30 +20,30 @@ namespace RestoranModulu.Ekranlar.admin
             {
                 this.katID = katID;
 
-                // Panel 2, Panel 4 ve Masayı Kata Ekle butonu gösterilir ve etkinleştirilir.
-                panel2.Parent = this;
+                // Panel 4 ve Panel 6 gösterilir ve etkinleştirilir.
                 panel4.Parent = this;
+                panel6.Parent = this;
 
-                panel2.Visible = true;
                 panel4.Visible = true;
-                panel2.Enabled = true;
+                panel6.Visible = true;
                 panel4.Enabled = true;
+                panel6.Enabled = true;
 
-                button7.Visible = true;
-                button7.Enabled = true;
 
-                // Panel 1, Panel 3, Masayı Güncelle butonu ve Masayı Sil butonu gizlenir ve etkisiz hale getirilir.
+                // Panel 1, Panel 3 ve Panel 5 gizlenir ve etkisiz hale getirilir.
                 panel1.Visible = false;
                 panel3.Visible = false;
+                panel5.Visible = false;
                 panel1.Enabled = false;
                 panel3.Enabled = false;
+                panel5.Enabled = false;
 
-                button3.Visible = false;
-                button4.Visible = false;
-                button3.Enabled = false;
-                button4.Enabled = false;
+                // Boşta olan ve kata ait olan masaların listelenmesi.
+                dataGridView2.DataSource = vt.Listele(true);
+                dataGridView3.DataSource = vt.Listele(true, katID);
             }
-            dataGridView1.DataSource = vt.Listele();
+            else
+                dataGridView1.DataSource = vt.Listele();
         }
 
         // Yeni Masa Ekle butonu
@@ -56,8 +56,17 @@ namespace RestoranModulu.Ekranlar.admin
                 // Ürün ekleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
                 if (vt.masaEkle(adi, sandalyeSayisi, masaDurumu, katID, aciklama))
                 {
-                    dataGridView1.DataSource = vt.Listele();
-                    temizle();
+                    if (katID != 0)
+                    {
+                        dataGridView2.DataSource = vt.Listele(true);
+                        dataGridView3.DataSource = vt.Listele(true, katID);
+                    }
+                    else
+                    {
+                        dataGridView1.DataSource = vt.Listele();
+                        temizle();
+
+                    }
                 }
 
             }
@@ -85,7 +94,6 @@ namespace RestoranModulu.Ekranlar.admin
         // Masayı Kata Ekle butonu
         private void button7_Click(object sender, System.EventArgs e)
         {
-            Console.WriteLine(masaID.ToString() + katID.ToString());
             if (masaID > 0 && katID > 0)
             {
                 // Masayı kata ekleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
@@ -126,11 +134,76 @@ namespace RestoranModulu.Ekranlar.admin
                 dataGridView1.DataSource = vt.Listele();
         }
 
+        // Boş Masaları Listele butonu
+        private void button5_Click(object sender, EventArgs e)
+        {
+            dataGridView1.DataSource = vt.Listele(true);
+            temizle();
+        }
+
         // Hepsini Listele butonu
         private void button4_Click(object sender, EventArgs e)
         {
             dataGridView1.DataSource = vt.Listele();
             temizle();
+        }
+
+        // Boşta Olan Masalar listesi içinde seçilen masa, verilen katID değerine sahip kata eklenir.
+        private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int satirNo = e.RowIndex;
+            if (satirNo >= 0)
+            {
+                if (katID != 0)
+                {
+                    masaID = int.Parse(dataGridView2.Rows[satirNo].Cells[0].Value.ToString());
+                    adi = dataGridView2.Rows[satirNo].Cells[1].Value.ToString();
+                    sandalyeSayisi = int.Parse(dataGridView2.Rows[satirNo].Cells[2].Value.ToString());
+                    masaDurumu = dataGridView2.Rows[satirNo].Cells[3].Value.ToString();
+                    aciklama = dataGridView2.Rows[satirNo].Cells[4].Value.ToString();
+
+                    if (vt.masaGuncelle(masaID, adi, sandalyeSayisi, masaDurumu, aciklama, katID))
+                    {
+                        dataGridView2.DataSource = vt.Listele(true);
+                        dataGridView3.DataSource = vt.Listele(true, katID);
+                    }
+                }
+            }
+        }
+
+        //Kata ait masalar listesinden seçilen masa, listeden çıkartılır.
+        private void dataGridView3_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int satirNo = e.RowIndex;
+            if (satirNo >= 0)
+            {
+                masaID = int.Parse(dataGridView3.Rows[satirNo].Cells[0].Value.ToString());
+                adi = dataGridView3.Rows[satirNo].Cells[1].Value.ToString();
+                sandalyeSayisi = int.Parse(dataGridView3.Rows[satirNo].Cells[2].Value.ToString());
+                masaDurumu = dataGridView3.Rows[satirNo].Cells[3].Value.ToString();
+                aciklama = dataGridView3.Rows[satirNo].Cells[4].Value.ToString();
+
+                if (vt.masaGuncelle(masaID, adi, sandalyeSayisi, masaDurumu, aciklama, 0))
+                {
+                    dataGridView2.DataSource = vt.Listele(true);
+                    dataGridView3.DataSource = vt.Listele(true, katID);
+                }
+            }
+
+        }
+
+        // Masaları Temizle butonu
+        private void button8_Click(object sender, EventArgs e)
+        {
+            if (katID > 0)
+            {
+                // Masayı kata ekleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
+                if (vt.masalariTemizle(katID))
+                {
+                    dataGridView2.DataSource = vt.Listele(true);
+                    dataGridView3.DataSource = vt.Listele(true, katID);
+                }
+            }
         }
 
         // dataGridView listesinde bulunan bir satıra tıklanınca, o satır içinde bulunan bilgiler ile textBox ve comboBox'ları doldurur.
