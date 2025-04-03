@@ -82,11 +82,11 @@
     <Compile Include="Ekranlar\admin\AdminMenuEkranı.Designer.cs">
       <DependentUpon>AdminMenuEkranı.cs</DependentUpon>
     </Compile>
-    <Compile Include="Ekranlar\admin\AdminMenuUrunEkranı.cs">
+    <Compile Include="Ekranlar\admin\AdminMenuDetayEkranı.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Ekranlar\admin\AdminMenuUrunEkranı.Designer.cs">
-      <DependentUpon>AdminMenuUrunEkranı.cs</DependentUpon>
+    <Compile Include="Ekranlar\admin\AdminMenuDetayEkranı.Designer.cs">
+      <DependentUpon>AdminMenuDetayEkranı.cs</DependentUpon>
     </Compile>
     <Compile Include="Ekranlar\admin\AdminRollerEkranı.cs">
       <SubType>Form</SubType>
@@ -136,6 +136,7 @@
     <Compile Include="VeriTabaniIslemleri\VTKullanicilar.cs" />
     <Compile Include="VeriTabaniIslemleri\VTGiris.cs" />
     <Compile Include="VeriTabaniIslemleri\VTMasa.cs" />
+    <Compile Include="VeriTabaniIslemleri\VTMenu.cs" />
     <Compile Include="VeriTabaniIslemleri\VTRoller.cs" />
     <Compile Include="VeriTabaniIslemleri\VTUrunler.cs" />
     <EmbeddedResource Include="Ekranlar\admin\AdminAnaEkranı.resx">
@@ -156,8 +157,8 @@
     <EmbeddedResource Include="Ekranlar\admin\AdminMenuEkranı.resx">
       <DependentUpon>AdminMenuEkranı.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Ekranlar\admin\AdminMenuUrunEkranı.resx">
-      <DependentUpon>AdminMenuUrunEkranı.cs</DependentUpon>
+    <EmbeddedResource Include="Ekranlar\admin\AdminMenuDetayEkranı.resx">
+      <DependentUpon>AdminMenuDetayEkranı.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Ekranlar\admin\AdminRollerEkranı.resx">
       <DependentUpon>AdminRollerEkranı.cs</DependentUpon>

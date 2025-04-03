@@ -10,10 +10,13 @@ public class VTUrunler
     public string baglantiKodu = "Data Source=DESKTOP-HSH38D0;Initial Catalog=RestoranModulu;Integrated Security=True";
 
     // Tablo üzerindeki verileri çeker ve Data Table olarak geri döndürür.
-    public DataTable Listele()
+    public DataTable Listele(int menuID = 0)
     {
         SqlConnection baglanti = new SqlConnection(baglantiKodu);
         string sqlKomutu = $"SELECT * FROM Urunler";
+
+        if (menuID != 0)
+            sqlKomutu += $" WHERE menuID='{menuID}'";
         SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
         try
         {
@@ -63,11 +66,11 @@ public class VTUrunler
 
     // "Urunler" tablosu içerisinde, ID değeri verilen ürünün bilgilerini günceller.
     public bool urunGuncelle(int urunID, string adi, int kategoriID, int fiyati, int miktar, string durumu = null,
-                              string resimYolu = null, string aciklama = null)
+                              string resimYolu = null, string aciklama = null, int menuID = 0)
     {
         SqlConnection baglanti = new SqlConnection(baglantiKodu);
         string sqlKomutu = $"UPDATE Urunler " +
-                           $"SET adi='{adi}', kategoriID='{kategoriID}', fiyati='{fiyati}', miktar='{miktar}', durumu='{durumu}', resimYolu='{resimYolu}', aciklama='{aciklama} '" +
+                           $"SET adi='{adi}', kategoriID='{kategoriID}', fiyati='{fiyati}', miktar='{miktar}', durumu='{durumu}', resimYolu='{resimYolu}', aciklama='{aciklama}', menuID='{menuID}'" +
                            $"WHERE urunID='{urunID}'";
         try
         {
