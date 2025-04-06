@@ -125,13 +125,18 @@ public class VTMasa
     }
 
     //  "Masalar" tablosu içinde verilen değerlere göre filtreleme yapar.
-    public DataTable masaFiltrele(string adi = null, int sandalyeSayisi = 0, string masaDurumu = null, string aciklama = null, int katID = 0)
+    public DataTable masaFiltrele(int masaID = 0, string adi = null, int sandalyeSayisi = 0, string masaDurumu = null, string aciklama = null, int katID = 0)
     {
         using (SqlConnection baglanti = new SqlConnection(baglantiKodu))
         {
             List<string> conditions = new List<string>(); // Filtreleri tutacak liste
             SqlCommand komut = new SqlCommand();
 
+            if (!(masaID == 0))
+            {
+                conditions.Add("masaID=@masaID");
+                komut.Parameters.AddWithValue("@masaID", masaID);
+            }
             if (!string.IsNullOrEmpty(adi))
             {
                 conditions.Add("adi LIKE @adi");
@@ -258,4 +263,5 @@ public class VTMasa
         }
         return true;
     }
+
 }

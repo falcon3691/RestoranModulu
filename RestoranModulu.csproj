@@ -118,6 +118,18 @@
     <Compile Include="Ekranlar\garson\KatEkranı.Designer.cs">
       <DependentUpon>KatEkranı.cs</DependentUpon>
     </Compile>
+    <Compile Include="Ekranlar\garson\MasaDetay.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ekranlar\garson\MasaDetay.Designer.cs">
+      <DependentUpon>MasaDetay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Ekranlar\garson\UrunSecme.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ekranlar\garson\UrunSecme.Designer.cs">
+      <DependentUpon>UrunSecme.cs</DependentUpon>
+    </Compile>
     <Compile Include="Ekranlar\GirisEkranı.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -138,6 +150,7 @@
     <Compile Include="VeriTabaniIslemleri\VTMasa.cs" />
     <Compile Include="VeriTabaniIslemleri\VTMenu.cs" />
     <Compile Include="VeriTabaniIslemleri\VTRoller.cs" />
+    <Compile Include="VeriTabaniIslemleri\VTSiparisler.cs" />
     <Compile Include="VeriTabaniIslemleri\VTUrunler.cs" />
     <EmbeddedResource Include="Ekranlar\admin\AdminAnaEkranı.resx">
       <DependentUpon>AdminAnaEkranı.cs</DependentUpon>
@@ -175,6 +188,12 @@
     <EmbeddedResource Include="Ekranlar\garson\KatEkranı.resx">
       <DependentUpon>KatEkranı.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Ekranlar\garson\MasaDetay.resx">
+      <DependentUpon>MasaDetay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ekranlar\garson\UrunSecme.resx">
+      <DependentUpon>UrunSecme.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Ekranlar\GirisEkranı.resx">
       <DependentUpon>GirisEkranı.cs</DependentUpon>
     </EmbeddedResource>
@@ -186,6 +205,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -213,6 +233,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Ekranlar\Kasa\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Sandalye_PixelArt.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Sandalye_PixelArt - Kopya.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

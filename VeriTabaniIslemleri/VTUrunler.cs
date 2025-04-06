@@ -66,11 +66,11 @@ public class VTUrunler
 
     // "Urunler" tablosu içerisinde, ID değeri verilen ürünün bilgilerini günceller.
     public bool urunGuncelle(int urunID, string adi, int kategoriID, int fiyati, int miktar, string durumu = null,
-                              string resimYolu = null, string aciklama = null, int menuID = 0)
+                              string resimYolu = null, string aciklama = null)
     {
         SqlConnection baglanti = new SqlConnection(baglantiKodu);
         string sqlKomutu = $"UPDATE Urunler " +
-                           $"SET adi='{adi}', kategoriID='{kategoriID}', fiyati='{fiyati}', miktar='{miktar}', durumu='{durumu}', resimYolu='{resimYolu}', aciklama='{aciklama}', menuID='{menuID}'" +
+                           $"SET adi='{adi}', kategoriID='{kategoriID}', fiyati='{fiyati}', miktar='{miktar}', durumu='{durumu}', resimYolu='{resimYolu}', aciklama='{aciklama}' " +
                            $"WHERE urunID='{urunID}'";
         try
         {

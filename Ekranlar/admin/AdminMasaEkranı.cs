@@ -128,8 +128,8 @@ namespace RestoranModulu.Ekranlar.admin
         private void button6_Click(object sender, EventArgs e)
         {
             degerAtama();
-            if (vt.masaFiltrele(adi, sandalyeSayisi, masaDurumu, aciklama, katID) != null)
-                dataGridView1.DataSource = vt.masaFiltrele(adi, sandalyeSayisi, masaDurumu, aciklama, katID);
+            if (vt.masaFiltrele(0, adi, sandalyeSayisi, masaDurumu, aciklama, katID) != null)
+                dataGridView1.DataSource = vt.masaFiltrele(0, adi, sandalyeSayisi, masaDurumu, aciklama, katID);
             else
                 dataGridView1.DataSource = vt.Listele();
         }

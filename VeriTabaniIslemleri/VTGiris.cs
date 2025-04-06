@@ -17,7 +17,7 @@ public class VTGiris
     public DataTable KullaniciListele(string kullaniciAdi, string kullaniciParola, int rolID)
     {
         SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"SELECT * FROM Kullanici WHERE kullaniciAdi='{kullaniciAdi}' AND parola='{kullaniciParola}' AND rolID='{rolID}'";
+        string sqlKomutu = $"SELECT * FROM Kullanicilar WHERE kullaniciAdi='{kullaniciAdi}' AND parola='{kullaniciParola}' AND rolID='{rolID}'";
         SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
         try
         {
