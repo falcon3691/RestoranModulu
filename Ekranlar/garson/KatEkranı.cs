@@ -12,12 +12,13 @@ namespace RestoranModulu.Ekranlar.garson
         VTKatlar vtKat = new VTKatlar();
         VTMasa vtMasa = new VTMasa();
 
-        int kullaniciID = 0;
-        public KatEkranı(int kullaniciID)
+        int rolID, kullaniciID = 0;
+        public KatEkranı(int kullaniciID, int rolID)
         {
             InitializeComponent();
             LoadKatsAndMasas();
             this.kullaniciID = kullaniciID;
+            this.rolID = rolID;
         }
 
         public FlowLayoutPanel CreateKatPanel(int katId, string katAdi, string aciklama, string durumu)
@@ -114,7 +115,7 @@ namespace RestoranModulu.Ekranlar.garson
                 int masaID = (int)tiklananButon.Tag;
 
                 // Yeni ekranı aç, masaID'yi parametre olarak gönder
-                MasaDetay detayForm = new MasaDetay(masaID, kullaniciID);
+                MasaDetay detayForm = new MasaDetay(masaID, kullaniciID, rolID);
                 this.SuspendLayout();
                 detayForm.ShowDialog(); // veya Show(), ihtiyaca göre
             }

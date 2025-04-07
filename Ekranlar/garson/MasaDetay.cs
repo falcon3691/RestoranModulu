@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using RestoranModulu.Ekranlar.Kasa;
+using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -13,12 +14,27 @@ namespace RestoranModulu.Ekranlar.garson
         string adi, masaDurumu, aciklama = null;
         int masaID, sandalyeSayisi, katID, kullaniciID = 0;
 
-        public MasaDetay(int masaID, int kullaniciID)
+        public MasaDetay(int masaID, int kullaniciID, int rolID)
         {
             InitializeComponent();
             degerAtama(masaID);
             ekranDoldurma();
             this.kullaniciID = kullaniciID;
+            urunleriListele(masaID);
+            if (rolID == 2)
+                button3.Visible = true;
+            if (dataGridView1.Columns.Contains("siparisDetayID"))
+            {
+                dataGridView1.Columns["siparisDetayID"].Visible = false;
+            }
+        }
+
+        // Ödeme Yap butonu
+        private void button3_Click(object sender, System.EventArgs e)
+        {
+            Odeme form = new Odeme(masaID);
+            this.SuspendLayout();
+            form.ShowDialog();
             urunleriListele(masaID);
         }
 
@@ -76,6 +92,7 @@ namespace RestoranModulu.Ekranlar.garson
             }
             label5.Text = toplamTutar.ToString();
         }
+
         public void ekranDoldurma()
         {
             label1.Text = adi;

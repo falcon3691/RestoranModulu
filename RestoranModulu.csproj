@@ -136,6 +136,12 @@
     <Compile Include="Ekranlar\GirisEkranı.Designer.cs">
       <DependentUpon>GirisEkranı.cs</DependentUpon>
     </Compile>
+    <Compile Include="Ekranlar\Kasa\Odeme.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ekranlar\Kasa\Odeme.Designer.cs">
+      <DependentUpon>Odeme.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RestoranModuluDataSet.Designer.cs">
@@ -197,6 +203,9 @@
     <EmbeddedResource Include="Ekranlar\GirisEkranı.resx">
       <DependentUpon>GirisEkranı.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Ekranlar\Kasa\Odeme.resx">
+      <DependentUpon>Odeme.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -231,9 +240,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Ekranlar\Kasa\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Resources\Sandalye_PixelArt.png" />
   </ItemGroup>

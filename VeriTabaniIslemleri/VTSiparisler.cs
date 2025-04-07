@@ -56,10 +56,13 @@ public class VTSiparisler
         return null;
     }
 
-    public DataTable detayListele(int siparisID)
+    public DataTable detayListele(int siparisID, bool filtre = false)
     {
         SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"SELECT urunID, urunAdi, miktar, birimFiyat, toplamFiyat FROM SiparisDetay WHERE siparisID = '{siparisID}'";
+        string sqlKomutu = $"SELECT urunID, urunAdi, miktar, birimFiyat, toplamFiyat, siparisDetayID FROM SiparisDetay WHERE siparisID = '{siparisID}'";
+
+        if (filtre)
+            sqlKomutu += $" AND durumu='ödenmedi'";
 
         SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
         try
@@ -96,6 +99,36 @@ public class VTSiparisler
             else
             {
                 MessageBox.Show("Detay bilgileri eklenemedi.");
+                return false;
+            }
+        }
+        catch (Exception hata)
+        {
+            baglanti.Close();
+            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return false;
+        }
+        return true;
+    }
+
+    public bool siparisDetayGuncelle(int siparisDetayID, string durumu)
+    {
+        SqlConnection baglanti = new SqlConnection(baglantiKodu);
+        string sqlKomutu = $"UPDATE SiparisDetay " +
+                           $"SET durumu='{durumu}' " +
+                           $"WHERE siparisDetayID='{siparisDetayID}'";
+        try
+        {
+
+            baglanti.Open();
+            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
+            int sonuc = komut.ExecuteNonQuery();
+            baglanti.Close();
+            if (sonuc == 1)
+                Console.Out.WriteLine("Sipariş detayı başarılı bir şekilde güncellendi");
+            else
+            {
+                MessageBox.Show("Sipariş detayı güncellenemedi.");
                 return false;
             }
         }
@@ -169,7 +202,7 @@ public class VTSiparisler
     {
         SqlConnection baglanti = new SqlConnection(baglantiKodu);
         string sqlKomutu = $"UPDATE Siparisler " +
-                           $"SET toplamFiyat='{toplamFiyat}', durumu='{durumu}', olusturmaTarihi='{DateTime.Now}'" +
+                           $"SET toplamFiyat='{toplamFiyat}', durumu='{durumu}', olusturmaTarihi='{DateTime.Now}' " +
                            $"WHERE siparisID='{siparisID}'";
         try
         {

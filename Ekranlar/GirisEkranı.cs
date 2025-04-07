@@ -38,7 +38,7 @@ namespace RestoranModulu
                 if (dt != null)
                 {
                     int kullaniciID = int.Parse(dt.Rows[0][0].ToString());
-                    KatEkranı form = new KatEkranı(kullaniciID);
+                    KatEkranı form = new KatEkranı(kullaniciID, 2);
                     this.Hide();
                     form.ShowDialog();
                     this.Close();
@@ -54,7 +54,7 @@ namespace RestoranModulu
                 if (dt != null)
                 {
                     int kullaniciID = int.Parse(dt.Rows[0][0].ToString());
-                    KatEkranı form = new KatEkranı(kullaniciID);
+                    KatEkranı form = new KatEkranı(kullaniciID, 3);
                     this.Hide();
                     form.ShowDialog();
                     this.Close();
