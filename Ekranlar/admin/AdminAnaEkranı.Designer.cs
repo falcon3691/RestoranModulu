@@ -142,6 +142,7 @@
             this.mutfakToolStripMenuItem.Name = "mutfakToolStripMenuItem";
             this.mutfakToolStripMenuItem.Size = new System.Drawing.Size(88, 32);
             this.mutfakToolStripMenuItem.Text = "Mutfak";
+            this.mutfakToolStripMenuItem.Click += new System.EventHandler(this.mutfakToolStripMenuItem_Click);
             // 
             // geriDönToolStripMenuItem
             // 

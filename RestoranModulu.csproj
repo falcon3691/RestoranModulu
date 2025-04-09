@@ -142,6 +142,12 @@
     <Compile Include="Ekranlar\Kasa\Odeme.Designer.cs">
       <DependentUpon>Odeme.cs</DependentUpon>
     </Compile>
+    <Compile Include="Ekranlar\Mutfak\Mutfak.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Ekranlar\Mutfak\Mutfak.Designer.cs">
+      <DependentUpon>Mutfak.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RestoranModuluDataSet.Designer.cs">
@@ -155,6 +161,7 @@
     <Compile Include="VeriTabaniIslemleri\VTGiris.cs" />
     <Compile Include="VeriTabaniIslemleri\VTMasa.cs" />
     <Compile Include="VeriTabaniIslemleri\VTMenu.cs" />
+    <Compile Include="VeriTabaniIslemleri\VTMutfak.cs" />
     <Compile Include="VeriTabaniIslemleri\VTRoller.cs" />
     <Compile Include="VeriTabaniIslemleri\VTSiparisler.cs" />
     <Compile Include="VeriTabaniIslemleri\VTUrunler.cs" />
@@ -205,6 +212,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Ekranlar\Kasa\Odeme.resx">
       <DependentUpon>Odeme.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Ekranlar\Mutfak\Mutfak.resx">
+      <DependentUpon>Mutfak.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

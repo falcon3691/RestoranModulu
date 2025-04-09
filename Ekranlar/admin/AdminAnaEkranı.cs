@@ -72,5 +72,12 @@ namespace RestoranModulu.Ekranlar.admin
             form.MdiParent = this;
             form.Show();
         }
+
+        private void mutfakToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Mutfak.Mutfak form = new Mutfak.Mutfak();
+            form.MdiParent = this;
+            form.Show();
+        }
     }
 }

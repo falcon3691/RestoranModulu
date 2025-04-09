@@ -77,7 +77,7 @@ namespace RestoranModulu.Ekranlar.garson
             DataTable dt2 = new DataTable();
             foreach (DataRow siparis in vtSiparis.Listele2(masaID).Rows)
             {
-                dt2.Merge(vtSiparis.detayListele(int.Parse(siparis[0].ToString())));
+                dt2.Merge(vtSiparis.detayListele(int.Parse(siparis[0].ToString()), true));
             }
 
             dataGridView1.DataSource = dt2;

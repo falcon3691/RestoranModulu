@@ -35,6 +35,31 @@ public class VTMasa
         }
         return null;
     }
+
+    // Tablo üzerindeki verileri çeker ve Data Table olarak geri döndürür.
+    public DataTable Listele2(int masaID)
+    {
+        SqlConnection baglanti = new SqlConnection(baglantiKodu);
+        string sqlKomutu = $"SELECT * FROM Masalar WHERE masaID='{masaID}'";
+
+        SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
+        try
+        {
+            baglanti.Open();
+            SqlDataAdapter da = new SqlDataAdapter(komut);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            baglanti.Close();
+            return dt;
+        }
+        catch (Exception hata)
+        {
+            baglanti.Close();
+            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        return null;
+    }
+
     public bool masaEkle(string adi, int sandalyeSayisi, string masaDurumu = null, int katID = 0, string aciklama = null)
     {
         SqlConnection baglanti = new SqlConnection(baglantiKodu);
