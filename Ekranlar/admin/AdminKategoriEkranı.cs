@@ -103,11 +103,6 @@ namespace RestoranModulu.Ekranlar.admin
             // Ekranın temizlenmesi.
             textBox1.Text = null;
             textBox2.Text = null;
-
-            // Kullanıcı değişkenlerinin temizlenmesi.
-            kategoriID = 0;
-            adi = null;
-            aciklama = null;
         }
 
         // Ürün değişkenlerine değer atama işlemleri
