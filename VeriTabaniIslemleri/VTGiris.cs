@@ -1,45 +1,50 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Data;
-using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Text;
 using System.Windows.Forms;
-
 public class VTGiris
 {
-    // Veri tabanı bağlantısı.
-    public string baglantiKodu = "Data Source=DESKTOP-HSH38D0;Initial Catalog=RestoranModulu;Integrated Security=True";
+    // MySQL Veri tabanı bağlantısı.
+    public string baglantiKodu = "Server=localhost; Database=restoranmodulu; Uid=root; Pwd=Malukat3691.;";
 
-    public VTGiris()
-    {
-
-    }
-
-    // Giriş ekranında kullanıcı kontrolü yaparken kullanılır ve Data Table olarak geri döndürür.
     public DataTable KullaniciListele(string kullaniciAdi, string kullaniciParola, int rolID)
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"SELECT * FROM Kullanicilar WHERE kullaniciAdi='{kullaniciAdi}' AND parola='{kullaniciParola}' AND rolID='{rolID}'";
-        SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-        try
+        DataTable dt = new DataTable();
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            baglanti.Open();
-            SqlDataAdapter da = new SqlDataAdapter(komut);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            baglanti.Close();
-            if (dt.Rows.Count == 0)
+            string sqlKomutu = "SELECT kullaniciID FROM kullanicilar WHERE kullaniciAdi = @kullaniciAdi AND parola = @parola AND rolID = @rolID";
+            try
             {
-                MessageBox.Show("Girilen bilgilere göre bir kullanıcı bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                komut.Parameters.AddWithValue("@kullaniciAdi", kullaniciAdi);
+                komut.Parameters.AddWithValue("@parola", ParolaHashle(kullaniciParola));
+                komut.Parameters.AddWithValue("@rolID", rolID);
+
+                MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                da.Fill(dt);
             }
-            else
-                return dt;
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-        catch (Exception hata)
+        return dt;
+    }
+
+    public static string ParolaHashle(string parola)
+    {
+        using (SHA256 sha256 = SHA256.Create())
         {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            byte[] bytes = Encoding.UTF8.GetBytes(parola);
+            byte[] hash = sha256.ComputeHash(bytes);
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in hash)
+                sb.Append(b.ToString("x2"));
+            return sb.ToString();
         }
-        return null;
     }
 
 }

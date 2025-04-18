@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Windows.Forms;
 
 namespace RestoranModulu.Ekranlar.admin
@@ -8,7 +9,6 @@ namespace RestoranModulu.Ekranlar.admin
     {
         VTUrunler vt = new VTUrunler();
 
-        // Ürün bilgileri değişkenleri
         int urunID, kategoriID, fiyati, miktar = 0;
         string adi, durumu, resimYolu, aciklama = null;
 
@@ -26,13 +26,9 @@ namespace RestoranModulu.Ekranlar.admin
             if (mesaj == null)
             {
                 degerAtama();
-                // Ürün ekleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.urunEkle(adi, kategoriID, fiyati, miktar, durumu, resimYolu, aciklama))
-                {
-                    dataGridView1.DataSource = vt.Listele();
-                    temizle();
-                }
-
+                vt.urunEkle(adi, kategoriID, fiyati, miktar, durumu, resimYolu, aciklama);
+                dataGridView1.DataSource = vt.Listele();
+                temizle();
             }
             else
                 MessageBox.Show(mesaj, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -44,12 +40,9 @@ namespace RestoranModulu.Ekranlar.admin
             if (urunID > 0)
             {
                 degerAtama();
-                // Ürün güncelleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.urunGuncelle(urunID, adi, kategoriID, fiyati, miktar, durumu, resimYolu, aciklama))
-                {
-                    dataGridView1.DataSource = vt.Listele();
-                    temizle();
-                }
+                vt.urunGuncelle(urunID, adi, durumu, resimYolu, aciklama, kategoriID, fiyati, miktar);
+                dataGridView1.DataSource = vt.Listele();
+                temizle();
             }
             else
                 MessageBox.Show("Ürünler listesi içinden bir ürün şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -61,12 +54,9 @@ namespace RestoranModulu.Ekranlar.admin
             if (urunID > 0)
             {
                 degerAtama();
-                // Ürün silme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.urunSil(urunID))
-                {
-                    dataGridView1.DataSource = vt.Listele();
-                    temizle();
-                }
+                vt.urunSil(urunID);
+                dataGridView1.DataSource = vt.Listele();
+                temizle();
             }
             else
                 MessageBox.Show("Ürünler listesi içinden bir ürün şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -76,10 +66,14 @@ namespace RestoranModulu.Ekranlar.admin
         private void button4_Click(object sender, EventArgs e)
         {
             degerAtama();
-            if (vt.urunFiltrele(adi, kategoriID, fiyati, miktar, durumu, resimYolu, aciklama) != null)
-                dataGridView1.DataSource = vt.urunFiltrele(adi, kategoriID, fiyati, miktar, durumu, resimYolu, aciklama);
+            DataTable filtrelenmisListe = vt.urunFiltrele(adi, durumu, resimYolu, aciklama, kategoriID, fiyati, miktar);
+            if (filtrelenmisListe.Rows.Count > 0)
+                dataGridView1.DataSource = filtrelenmisListe ?? vt.Listele();
             else
+            {
+                MessageBox.Show("Girilen bilgilere göre bir ürün bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 dataGridView1.DataSource = vt.Listele();
+            }
         }
 
         // Hepsini Listele butonu
@@ -89,29 +83,33 @@ namespace RestoranModulu.Ekranlar.admin
             temizle();
         }
 
-        // dataGridView listesinde bulunan bir satıra tıklanınca, o satır içinde bulunan bilgiler ile textBox ve comboBox'ları doldurur.
-        // Ayriyeten ürün üstünde işlem yapmak için urunID değerini alır.
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-
             int satirNo = e.RowIndex;
             if (satirNo >= 0)
             {
-                urunID = int.Parse(dataGridView1.Rows[satirNo].Cells[0].Value.ToString());
-                textBox1.Text = dataGridView1.Rows[satirNo].Cells[1].Value.ToString();
-                comboBox2.Text = dataGridView1.Rows[satirNo].Cells[2].Value.ToString();
-                textBox4.Text = dataGridView1.Rows[satirNo].Cells[3].Value.ToString();
-                textBox3.Text = dataGridView1.Rows[satirNo].Cells[4].Value.ToString();
-                textBox5.Text = dataGridView1.Rows[satirNo].Cells[5].Value.ToString();
-                comboBox1.Text = dataGridView1.Rows[satirNo].Cells[6].Value.ToString();
-                textBox2.Text = dataGridView1.Rows[satirNo].Cells[7].Value.ToString();
+                try
+                {
+                    var satir = dataGridView1.Rows[satirNo];
+                    urunID = Convert.ToInt32(satir.Cells[0].Value);
+                    textBox1.Text = satir.Cells[1].Value.ToString() ?? "";
+                    comboBox2.Text = satir.Cells[2].Value.ToString() ?? "";
+                    textBox4.Text = satir.Cells[3].Value.ToString() ?? "";
+                    textBox3.Text = satir.Cells[4].Value.ToString() ?? "";
+                    textBox5.Text = satir.Cells[5].Value.ToString() ?? "";
+                    comboBox1.Text = satir.Cells[6].Value.ToString() ?? "";
+                    textBox2.Text = satir.Cells[7].Value.ToString() ?? "";
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Satır verileri alınırken bir hata oluştu: " + ex.Message);
+                }
             }
         }
 
-        // Veri tablosunda NULL değer alamayan sütunlar için gerekli boşluk kontrolleri yapılır.
         public string boslukKontrolu()
         {
-            string mesaj;
+            string mesaj = null;
             List<string> hataMesajlari = new List<string>();
             if (string.IsNullOrEmpty(textBox1.Text))
                 hataMesajlari.Add("Ad bilgisi boş bırakılamaz");
@@ -120,18 +118,12 @@ namespace RestoranModulu.Ekranlar.admin
             if (string.IsNullOrEmpty(textBox4.Text))
                 hataMesajlari.Add("Fiyat bilgisi boş bırakılamaz");
             if (hataMesajlari.Count > 0)
-            {
                 mesaj = string.Join(Environment.NewLine, hataMesajlari);
-                return mesaj;
-            }
-
-            return null;
+            return mesaj;
         }
 
-        // Hem ekranda ki alanları temizler hem de kullanılan değişkenlerin değerlerini standart konuma getirir.
         public void temizle()
         {
-            // Ekranın temizlenmesi.
             textBox1.Text = null;
             textBox2.Text = null;
             textBox3.Text = null;
@@ -140,7 +132,6 @@ namespace RestoranModulu.Ekranlar.admin
             comboBox1.Text = null;
             comboBox2.Text = null;
 
-            // Kullanıcı değişkenlerinin temizlenmesi.
             urunID = 0;
             kategoriID = 0;
             fiyati = 0;
@@ -151,7 +142,6 @@ namespace RestoranModulu.Ekranlar.admin
             aciklama = null;
         }
 
-        // Ürün değişkenlerine değer atama işlemleri
         public void degerAtama()
         {
             if (!string.IsNullOrEmpty(textBox1.Text))

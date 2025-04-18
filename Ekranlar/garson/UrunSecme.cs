@@ -12,7 +12,6 @@ namespace RestoranModulu.Ekranlar.garson
         VTSiparisler vtSiparis = new VTSiparisler();
 
         int siparisID, masaID, kullaniciID = 0;
-        DateTime siparisOlusturmaTarihi = DateTime.Now.AddDays((-1));
 
         public UrunSecme(int masaID, int kullaniciID)
         {
@@ -31,47 +30,69 @@ namespace RestoranModulu.Ekranlar.garson
             this.kullaniciID = kullaniciID;
         }
 
+        // Geri Dön butonu
+        private void button1_Click(object sender, EventArgs e)
+        {
+            DataTable dt = vtSiparis.Listele(masaID);
+            siparisID = Convert.ToInt32(dt.Rows[0][0].ToString());
+            if (siparisID > 0)
+            {
+                vtSiparis.siparisSil(siparisID);
+                this.Close();
+            }
+        }
+
+        // Sipariş Ver butonu
+        private void button2_Click(object sender, EventArgs e)
+        {
+            DataTable dt = vtSiparis.Listele(masaID);
+            siparisID = Convert.ToInt32(dt.Rows[0]["siparisID"]);
+            if (siparisID > 0)
+            {
+                foreach (DataGridViewRow row in dataGridView1.Rows)
+                {
+                    int urunID = Convert.ToInt32(row.Cells["urunID"].Value);
+                    string urunAdi = row.Cells["urunAdi"].Value.ToString() ?? "";
+                    int miktar = Convert.ToInt32(row.Cells["adet"].Value);
+                    int birimFiyat = Convert.ToInt32(row.Cells["birimFiyat"].Value);
+                    int toplamFiyat = Convert.ToInt32(row.Cells["toplamFiyat"].Value);
+
+                    vtSiparis.siparisDetayEkle(siparisID, urunID, miktar, birimFiyat, toplamFiyat, "bekliyor", urunAdi);
+                }
+                vtSiparis.siparisGuncelle(siparisID, Convert.ToInt32(label5.Text), "bekliyor");
+                this.Close();
+            }
+        }
+
         public void urunleriOlustur(DataTable urunler)
         {
             for (int i = 0; i < urunler.Rows.Count; i++)
             {
-                // Yeni bir Urun objesi oluşturulur ve özellikleri belirlenmek üzere döngüye sokulur.
-                Urun urun = new Urun();
-                for (int j = 0; j < urunler.Columns.Count; j++)
-                {
-                    if (j == 0)
-                        urun.setUrunID(int.Parse(urunler.Rows[i][j].ToString()));       // Veri tabanından "urunID" değeri alınır ve Ürünün urunID özelliği olarak atanır.
-                    else if (j == 1)
-                        urun.setUrunAdi(urunler.Rows[i][j].ToString());                 // Veri tabanından "urunadi" değeri alınır ve Ürünün urunAdi özelliği olarak atanır.
-                    else if (j == 2)
-                        urun.setKategoriID(int.Parse(urunler.Rows[i][j].ToString()));   // Veri tabanından "kategoriID" değeri alınır ve Ürünün kategoriID özelliği olarak atanır.
-                    else if (j == 3)
-                        urun.setFiyat(int.Parse(urunler.Rows[i][j].ToString()));        // Veri tabanından "fiyat" değeri alınır ve Ürünün fiyat özelliği olarak atanır.
-                    else if (j == 4)
-                        urun.setMiktar(int.Parse(urunler.Rows[i][j].ToString()));       // Veri tabanından "miktar" değeri alınır ve Ürünün miktar özelliği olarak atanır.
-                    else if (j == 5)
-                        urun.setDurumu(urunler.Rows[i][j].ToString());                  // Veri tabanından "durumu" değeri alınır ve Ürünün durumu özelliği olarak atanır.
-                    else if (j == 6)
-                        urun.setResimYolu(urunler.Rows[i][j].ToString());               // Veri tabanından "resimYolu" değeri alınır ve Ürünün resimYolu özelliği olarak atanır.
-                    else if (j == 7)
-                        urun.setAciklama(urunler.Rows[i][j].ToString());                // Veri tabanından "aciklama" değeri alınır ve Ürünün aciklama özelliği olarak atanır.
-                }
+                var satir = urunler.Rows[i];
+                Urun urun = new Urun(
+                    Convert.ToInt32(satir["urunID"]),
+                    satir["adi"].ToString() ?? "",
+                    Convert.ToInt32(satir["kategoriID"]),
+                    Convert.ToInt32(satir["fiyati"]),
+                    Convert.ToInt32(satir["miktar"]),
+                    satir["durumu"].ToString() ?? "",
+                    satir["resimYolu"].ToString() ?? "",
+                    satir["aciklama"].ToString() ?? ""
+                );
 
-                // Oluşturulan ürünün özellikleri ile yeni bir Ürün butonu oluşturulur.
                 Button urunButton = CreateUrunButton(urun);
-
                 urunButton.Click += UrunButton_Click;
-
                 flowLayoutPanel1.Controls.Add(urunButton);
             }
         }
+        
         public Button CreateUrunButton(Urun urun)
         {
             Button urunButton = new Button
             {
                 Width = 120,
                 Height = 120,
-                Text = $"{urun.getUrunAdi()}\nFiyatı: {urun.getFiyat()}",
+                Text = $"{urun.UrunAdi}\nFiyatı: {urun.Fiyat}",
                 TextAlign = ContentAlignment.TopCenter,
                 Tag = urun
             };
@@ -91,80 +112,33 @@ namespace RestoranModulu.Ekranlar.garson
             }
         }
 
-        // Geri Dön butonu
-        private void button1_Click(object sender, EventArgs e)
-        {
-            DataTable dt = vtSiparis.Listele(masaID);
-            siparisID = int.Parse(dt.Rows[0][0].ToString());
-            if (siparisID > 0)
-            {
-                if (vtSiparis.siparisSil(siparisID))
-                {
-                    this.Close();
-                }
-            }
-            else
-                Console.WriteLine("Sipariş ID değeri alınamadı");
-        }
-
-        // Sipariş Ver butonu
-        private void button2_Click(object sender, EventArgs e)
-        {
-            DataTable dt = vtSiparis.Listele(masaID);
-            siparisID = int.Parse(dt.Rows[0][0].ToString());
-            if (siparisID > 0)
-            {
-                foreach (DataGridViewRow row in dataGridView1.Rows)
-                {
-                    int urunID = int.Parse(row.Cells["urunID"].Value.ToString());
-                    string urunAdi = row.Cells["urunAdi"].Value.ToString();
-                    int miktar = int.Parse(row.Cells["adet"].Value.ToString());
-                    int birimFiyat = int.Parse(row.Cells["birimFiyat"].Value.ToString());
-                    int toplamFiyat = int.Parse(row.Cells["toplamFiyat"].Value.ToString());
-                    if (vtSiparis.siparisDetayEkle(siparisID, urunID, miktar, birimFiyat, toplamFiyat, "ödenmedi", urunAdi))
-                    {
-                        if (vtSiparis.siparisGuncelle(siparisID, int.Parse(label5.Text), "bekliyor"))
-                        {
-
-                            this.Close();
-                        }
-                    }
-                }
-            }
-            else
-                Console.WriteLine("Sipariş ID değeri alınamadı");
-        }
         public void satirEkle(Urun urun)
         {
             bool found = false;
-
-            // DataGridView içindeki satırları kontrol et
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
-                if (row.Cells["urunAdi"].Value != null && row.Cells["urunAdi"].Value.ToString() == urun.getUrunAdi())
+                if (row.Cells["urunAdi"].Value != null && row.Cells["urunAdi"].Value.ToString() == urun.UrunAdi)
                 {
-                    // Aynı isme sahip bir satır bulundu, ikinci sütundaki sayıyı artır
                     int mevcutSayi = Convert.ToInt32(row.Cells["adet"].Value);
                     row.Cells["adet"].Value = mevcutSayi + 1;
-                    row.Cells["toplamFiyat"].Value = (mevcutSayi + 1) * int.Parse(row.Cells["birimFiyat"].Value.ToString());
+                    row.Cells["toplamFiyat"].Value = (mevcutSayi + 1) * Convert.ToInt32(row.Cells["birimFiyat"].Value);
                     found = true;
-                    label5.Text = toplamFiyatHesapla(dataGridView1).ToString();
                     break;
                 }
             }
             if (!found)
             {
                 int rowIndex = dataGridView1.Rows.Add();
-                dataGridView1.Rows[rowIndex].Cells["urunID"].Value = urun.getUrunID();
-                dataGridView1.Rows[rowIndex].Cells["urunAdi"].Value = urun.getUrunAdi();
-                dataGridView1.Rows[rowIndex].Cells["adet"].Value = 1; // İlk başta 1 olarak eklenir
-                dataGridView1.Rows[rowIndex].Cells["birimFiyat"].Value = urun.getFiyat();
-                dataGridView1.Rows[rowIndex].Cells["toplamFiyat"].Value = urun.getFiyat();
+                var satir = dataGridView1.Rows[rowIndex];
+                satir.Cells["urunID"].Value = urun.UrunID;
+                satir.Cells["urunAdi"].Value = urun.UrunAdi;
+                satir.Cells["adet"].Value = 1;
+                satir.Cells["birimFiyat"].Value = urun.Fiyat;
+                satir.Cells["toplamFiyat"].Value = urun.Fiyat;
             }
             label5.Text = toplamFiyatHesapla(dataGridView1).ToString();
         }
 
-        // Ürün Adı ile filtreleme.
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             string adi = textBox1.Text;
@@ -173,22 +147,29 @@ namespace RestoranModulu.Ekranlar.garson
                 urunleriOlustur(vtUrun.Listele());
             else
             {
-                if (vtUrun.urunFiltrele(adi) != null)
-                    urunleriOlustur(vtUrun.urunFiltrele(adi));
+                DataTable filtrelenmisListe = vtUrun.urunFiltrele(adi, null, null, null);
+                if (filtrelenmisListe.Rows.Count > 0)
+                    urunleriOlustur(filtrelenmisListe ?? vtUrun.Listele());
                 else
+                {
+                    MessageBox.Show("Girilen bilgilere göre bir ürün bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     urunleriOlustur(vtUrun.Listele());
+                }
             }
         }
 
-        // Kategori ile filtreleme.
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             int kategoriID = int.Parse(comboBox1.Text);
             flowLayoutPanel1.Controls.Clear();
-            if (vtUrun.urunFiltrele(null, kategoriID) != null)
-                urunleriOlustur(vtUrun.urunFiltrele(null, kategoriID));
+            DataTable filtrelenmisListe = vtUrun.urunFiltrele(null, null, null, null, kategoriID);
+            if (filtrelenmisListe.Rows.Count > 0)
+                urunleriOlustur(filtrelenmisListe ?? vtUrun.Listele());
             else
+            {
+                MessageBox.Show("Girilen bilgilere göre bir ürün bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 urunleriOlustur(vtUrun.Listele());
+            }
         }
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -196,22 +177,21 @@ namespace RestoranModulu.Ekranlar.garson
             int satirNo = e.RowIndex;
             if (satirNo >= 0)
             {
-                int yeniMiktar = int.Parse(dataGridView1.Rows[satirNo].Cells["adet"].Value.ToString()) - 1;
+                var satir = dataGridView1.Rows[satirNo];
+                int yeniMiktar = Convert.ToInt32(satir.Cells["adet"].Value) - 1;
 
                 if (yeniMiktar == 0)
                 {
-                    dataGridView1.Rows.RemoveAt(satirNo);
+                    dataGridView1.Rows.Remove(satir);
                     label5.Text = toplamFiyatHesapla(dataGridView1).ToString();
                 }
                 else
                 {
-                    dataGridView1.Rows[satirNo].Cells["adet"].Value = yeniMiktar;
-                    dataGridView1.Rows[satirNo].Cells["toplamFiyat"].Value = yeniMiktar * int.Parse(dataGridView1.Rows[satirNo].Cells["birimFiyat"].Value.ToString());
+                    satir.Cells["adet"].Value = yeniMiktar;
+                    satir.Cells["toplamFiyat"].Value = yeniMiktar * Convert.ToInt32(satir.Cells["birimFiyat"].Value);
                     label5.Text = toplamFiyatHesapla(dataGridView1).ToString();
                 }
-
             }
-
         }
 
         public int toplamFiyatHesapla(DataGridView dt)
@@ -219,54 +199,43 @@ namespace RestoranModulu.Ekranlar.garson
             int sonuc = 0;
             foreach (DataGridViewRow row in dt.Rows)
             {
-                // Yeni satır veya geçersiz satırlar varsa atla
-                if (row.IsNewRow) continue;
-
-                // Hücre null değilse ve içinde geçerli bir sayı varsa ekle
-                if (row.Cells["toplamFiyat"].Value != null &&
-                    int.TryParse(row.Cells["toplamFiyat"].Value.ToString(), out int deger))
+                if (row.Cells["toplamFiyat"].Value != null)
                 {
-                    sonuc += deger;
+                    sonuc += Convert.ToInt32(row.Cells["toplamFiyat"].Value);
                 }
             }
             return sonuc;
         }
-
     }
     public class Urun
     {
-        private int urunID;
-        public int getUrunID() { return this.urunID; }
-        public void setUrunID(int urunID) { this.urunID = urunID; }
+        public int UrunID { get; }
 
-        private string urunAdi;
-        public string getUrunAdi() { return this.urunAdi; }
-        public void setUrunAdi(string urunAdi) { this.urunAdi = urunAdi; }
+        public string UrunAdi { get; }
 
-        private int kategoriID;
-        public int getKategoriID() { return this.kategoriID; }
-        public void setKategoriID(int kategoriID) { this.kategoriID = kategoriID; }
+        public int KategoriID { get; }
 
-        private int fiyat;
-        public int getFiyat() { return this.fiyat; }
-        public void setFiyat(int fiyat) { this.fiyat = fiyat; }
+        public int Fiyat { get; }
 
-        private int miktar;
-        public int getMiktar() { return this.miktar; }
-        public void setMiktar(int miktar) { this.miktar = miktar; }
+        public int Miktar { get; }
 
-        private string durumu;
-        public string getDurumu() { return this.durumu; }
-        public void setDurumu(string durumu) { this.durumu = durumu; }
+        public string Durumu { get; }
 
-        private string resimYolu;
-        public string getResimYolu() { return this.resimYolu; }
-        public void setResimYolu(string resimYolu) { this.resimYolu = resimYolu; }
+        public string ResimYolu { get; }
 
-        private string aciklama;
-        public string getAciklama() { return this.aciklama; }
-        public void setAciklama(string aciklama) { this.aciklama = aciklama; }
+        public string Aciklama { get; }
 
+        public Urun(int urunID, string urunAdi, int kategoriID, int fiyat, int miktar, string durumu, string resimYolu, string aciklama)
+        {
+            this.UrunID = urunID;
+            this.UrunAdi = urunAdi;
+            this.KategoriID = kategoriID;
+            this.Fiyat = fiyat;
+            this.Miktar = miktar;
+            this.Durumu = durumu;
+            this.ResimYolu = resimYolu;
+            this.Aciklama = aciklama;
+        }
     }
 
 }

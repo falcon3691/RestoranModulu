@@ -1,167 +1,191 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Text;
 using System.Windows.Forms;
 
 public class VTKullanicilar
 {
-    // Veri tabanı bağlantısı.
-    public string baglantiKodu = "Data Source=DESKTOP-HSH38D0;Initial Catalog=RestoranModulu;Integrated Security=True";
+    public string baglantiKodu = "Server=localhost; Database=restoranmodulu; Uid=root; Pwd=Malukat3691.;";
 
-    // Sadece verilen tablo üzerindeki veriler çeker ve Data Table olarak geri döndürür.
     public DataTable Listele()
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"SELECT * FROM Kullanicilar";
-        SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-        try
+        DataTable dt = new DataTable();
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            baglanti.Open();
-            SqlDataAdapter da = new SqlDataAdapter(komut);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            baglanti.Close();
-            return dt;
-        }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-        return null;
-    }
-
-    // "Kullanicilar" tablosuna veri ekler.
-    public bool KullaniciEkle(string adiSoyadi, string kullaniciAdi, string parola, int rolID, byte durumu = 1,
-                              string aciklama = null, string telefon = null, string eMail = null)
-    {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"INSERT INTO Kullanicilar(adiSoyadi, telefon, eMail, kullaniciAdi, parola, rolID, durumu, aciklama)" +
-                                          $" VALUES('{adiSoyadi}', '{telefon}', '{eMail}', '{kullaniciAdi}', '{parola}', '{rolID}', '{durumu}', '{aciklama}')";
-        try
-        {
-
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Kullanıcı başarılı bir şekilde eklendi");
-            else
+            string sqlKomutu = "SELECT * FROM kullanicilar";
+            try
             {
-                MessageBox.Show("Kullanıcı eklenemedi.");
-                return false;
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                da.Fill(dt);
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
-        return true;
+        return dt;
     }
 
-    // "Kullanicilar" tablosu içerisinde, ID değeri verilen kullanıcının bilgilerini günceller.
-    public bool KullaniciGuncelle(int kullaniciID, string adiSoyadi, string kullaniciAdi, string parola, int rolID, byte durumu = 1,
-                              string aciklama = null, string telefon = null, string eMail = null)
+    public void KullaniciEkle(string adiSoyadi, string kullaniciAdi, string parola, int rolID, string durumu, string aciklama, string telefon, string eMail)
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"UPDATE Kullanicilar " +
-                           $"SET adiSoyadi='{adiSoyadi}', telefon='{telefon}', eMail='{eMail}', kullaniciAdi='{kullaniciAdi}', parola='{parola}', rolID='{rolID}', durumu='{durumu}', aciklama='{aciklama}' " +
-                           $"WHERE kullaniciID='{kullaniciID}'";
-        try
+        bool sonuc = false;
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Kullanıcı bilgileri başarılı bir şekilde güncellendi");
-            else
+            string parolaHashli = ParolaHashle(parola);
+            string sqlKomutu = "INSERT INTO kullanicilar(adiSoyadi, telefon, eMail, kullaniciAdi, parola, rolID, durumu, aciklama)" +
+                                                   " VALUES(@adiSoyadi, @telefon, @eMail, @kullaniciAdi, @parola, @rolID, @durumu, @aciklama)";
+            try
             {
-                MessageBox.Show("Kullanıcı bilgileri güncellenemedi.");
-                return false;
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                komut.Parameters.AddWithValue("@adiSoyadi", adiSoyadi);
+                komut.Parameters.AddWithValue("@telefon", telefon);
+                komut.Parameters.AddWithValue("@eMail", eMail);
+                komut.Parameters.AddWithValue("@kullaniciAdi", kullaniciAdi);
+                komut.Parameters.AddWithValue("@parola", parolaHashli);
+                komut.Parameters.AddWithValue("@rolID", rolID);
+                komut.Parameters.AddWithValue("@durumu", durumu);
+                komut.Parameters.AddWithValue("@aciklama", aciklama);
+
+                sonuc = (komut.ExecuteNonQuery() == 1) ? true : false;
+                if (!sonuc)
+                    MessageBox.Show("Kullanıcı eklenemedi.");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
-        return true;
     }
 
-    // "Kullanicilar" tablosu içerisinde, ID değeri verilen kullanıcının bilgilerini siler.
-    public bool KullaniciSil(int kullaniciID)
+    public void KullaniciGuncelle(int kullaniciID, string adiSoyadi, string kullaniciAdi, string parola, string durumu,
+                              string aciklama, string telefon, string eMail, int rolID = 0)
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"DELETE FROM Kullanicilar WHERE kullaniciID='{kullaniciID}'";
-        try
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
+            List<string> setKisimlari = new List<string>();
+            MySqlCommand komut = new MySqlCommand();
 
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Kullanıcı bilgileri başarılı bir şekilde silindi");
-            else
+            if (!string.IsNullOrEmpty(adiSoyadi))
             {
-                MessageBox.Show("Kullanıcı bilgileri silinemedi.");
-                return false;
+                setKisimlari.Add("adiSoyadi = @adiSoyadi");
+                komut.Parameters.AddWithValue("@adiSoyadi", adiSoyadi);
+            }
+
+            if (!string.IsNullOrEmpty(telefon))
+            {
+                setKisimlari.Add("telefon = @telefon");
+                komut.Parameters.AddWithValue("@telefon", telefon);
+            }
+
+            if (!string.IsNullOrEmpty(eMail))
+            {
+                setKisimlari.Add("eMail = @eMail");
+                komut.Parameters.AddWithValue("@eMail", eMail);
+            }
+
+            if (!string.IsNullOrEmpty(kullaniciAdi))
+            {
+                setKisimlari.Add("kullaniciAdi = @kullaniciAdi");
+                komut.Parameters.AddWithValue("@kullaniciAdi", kullaniciAdi);
+            }
+
+            if (!string.IsNullOrEmpty(parola))
+            {
+                setKisimlari.Add("parola = @parola");
+                komut.Parameters.AddWithValue("@parola", ParolaHashle(parola));
+            }
+
+            if (!string.IsNullOrEmpty(durumu))
+            {
+                setKisimlari.Add("durumu = @durumu");
+                komut.Parameters.AddWithValue("@durumu", durumu);
+            }
+
+            if (!string.IsNullOrEmpty(aciklama))
+            {
+                setKisimlari.Add("aciklama = @aciklama");
+                komut.Parameters.AddWithValue("@aciklama", aciklama);
+            }
+
+            if (rolID != 0)
+            {
+                setKisimlari.Add("rolID = @rolID");
+                komut.Parameters.AddWithValue("@rolID", rolID);
+            }
+
+            if (setKisimlari.Count == 0)
+                MessageBox.Show("Güncellenecek herhangi bir alan belirtilmedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            string sqlKomutu = $"UPDATE kullanicilar SET {string.Join(", ", setKisimlari)} WHERE kullaniciID = @kullaniciID";
+            komut.CommandText = sqlKomutu;
+            komut.Parameters.AddWithValue("@kullaniciID", kullaniciID);
+            komut.Connection = baglanti;
+
+            try
+            {
+                baglanti.Open();
+                bool sonuc = (komut.ExecuteNonQuery() == 1) ? true : false;
+                if (!sonuc)
+                    MessageBox.Show("Kullanıcı bilgileri güncellenemedi.");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
-        return true;
     }
 
-    //  "Kullanicilar" tablosu içinde verilen değerlere göre filtreleme yapar.
-    public DataTable kullaniciFiltrele(string adiSoyadi = null, string kullaniciAdi = null, string parola = null, string rolID = null,
-                                   string durumu = null, string aciklama = null, string telefon = null, string eMail = null)
+    public void KullaniciSil(int kullaniciID)
     {
-        using (SqlConnection baglanti = new SqlConnection(baglantiKodu))
+        bool sonuc = false;
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            List<string> conditions = new List<string>(); // Filtreleri tutacak liste
-            SqlCommand komut = new SqlCommand();
+            string sqlKomutu = "DELETE FROM kullanicilar WHERE kullaniciID=@kullaniciID";
+            try
+            {
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                komut.Parameters.AddWithValue("@kullaniciID", kullaniciID);
+
+                sonuc = (komut.ExecuteNonQuery() == 1) ? true : false;
+                if (!sonuc)
+                    MessageBox.Show("Kullanıcı bilgileri silinemedi.");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+    }
+
+    public DataTable kullaniciFiltrele(string adiSoyadi, int rolID, string durumu, string telefon, string eMail)
+    {
+        DataTable dt = new DataTable();
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
+        {
+            List<string> conditions = new List<string>();
+            MySqlCommand komut = new MySqlCommand();
 
             if (!string.IsNullOrEmpty(adiSoyadi))
             {
                 conditions.Add("adiSoyadi LIKE @adiSoyadi");
                 komut.Parameters.AddWithValue("@adiSoyadi", "%" + adiSoyadi + "%");
             }
-            if (!string.IsNullOrEmpty(kullaniciAdi))
-            {
-                conditions.Add("kullaniciAdi LIKE @kullaniciAdi");
-                komut.Parameters.AddWithValue("@kullaniciAdi", "%" + kullaniciAdi + "%");
-            }
-            if (!string.IsNullOrEmpty(parola))
-            {
-                conditions.Add("parola LIKE @parola");
-                komut.Parameters.AddWithValue("@parola", "%" + parola + "%");
-            }
-            if (!string.IsNullOrEmpty(rolID))
+            if (!string.IsNullOrEmpty(rolID.ToString()))
             {
                 conditions.Add("rolID = @rolID");
-                komut.Parameters.AddWithValue("@rolID", int.Parse(rolID));
+                komut.Parameters.AddWithValue("@rolID", rolID);
             }
             if (!string.IsNullOrEmpty(durumu))
             {
-                conditions.Add("durumu = @durumu");
-                komut.Parameters.AddWithValue("@durumu", byte.Parse(durumu));
-            }
-            if (!string.IsNullOrEmpty(aciklama))
-            {
-                conditions.Add("aciklama LIKE @aciklama");
-                komut.Parameters.AddWithValue("@aciklama", "%" + aciklama + "%");
+                conditions.Add("durumu LIKE @durumu");
+                komut.Parameters.AddWithValue("@durumu", "%" + durumu + "%");
             }
             if (!string.IsNullOrEmpty(telefon))
             {
@@ -174,14 +198,9 @@ public class VTKullanicilar
                 komut.Parameters.AddWithValue("@eMail", "%" + eMail + "%");
             }
 
-            // SQL Sorgusunu oluşturma
-            string sqlKomutu = "SELECT * FROM Kullanicilar";
+            string sqlKomutu = "SELECT * FROM kullanicilar ";
             if (conditions.Count > 0)
-            {
-                sqlKomutu += " WHERE " + string.Join(" OR ", conditions); // OR yerine AND kullanıldı, istenirse değiştirilebilir
-            }
-            else
-                return null;
+                sqlKomutu += "WHERE " + string.Join(" OR ", conditions);
 
             komut.CommandText = sqlKomutu;
             komut.Connection = baglanti;
@@ -189,27 +208,27 @@ public class VTKullanicilar
             try
             {
                 baglanti.Open();
-                SqlDataAdapter da = new SqlDataAdapter(komut);
-                DataTable dt = new DataTable();
+                MySqlDataAdapter da = new MySqlDataAdapter(komut);
                 da.Fill(dt);
-                baglanti.Close();
-
-                if (dt.Rows.Count == 0)
-                {
-                    MessageBox.Show("Girilen bilgilere göre bir kullanıcı bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return null;
-                }
-                else
-                {
-                    return dt;
-                }
             }
             catch (Exception hata)
             {
-                baglanti.Close();
                 MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
             }
+        }
+        return dt;
+    }
+
+    public string ParolaHashle(string parola)
+    {
+        using (SHA256 sha256 = SHA256.Create())
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(parola);
+            byte[] hash = sha256.ComputeHash(bytes);
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in hash)
+                sb.Append(b.ToString("x2"));
+            return sb.ToString();
         }
     }
 }

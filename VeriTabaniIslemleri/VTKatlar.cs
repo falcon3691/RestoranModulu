@@ -1,145 +1,151 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Windows.Forms;
 
 public class VTKatlar
 {
-    // Veri tabanı bağlantısı.
-    public string baglantiKodu = "Data Source=DESKTOP-HSH38D0;Initial Catalog=RestoranModulu;Integrated Security=True";
+    public string baglantiKodu = "Server=localhost; Database=restoranmodulu; Uid=root; Pwd=Malukat3691.;";
 
-    // Sadece verilen tablo üzerindeki veriler çeker ve Data Table olarak geri döndürür.
     public DataTable Listele()
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"SELECT * FROM Katlar";
-        SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-        try
+        DataTable dt = new DataTable();
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            baglanti.Open();
-            SqlDataAdapter da = new SqlDataAdapter(komut);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            baglanti.Close();
-            return dt;
-        }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-        return null;
-    }
-
-    // "Katlar" tablosuna veri ekler.
-    public bool katEkle(string adi, string durumu = null, string aciklama = null)
-    {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"INSERT INTO Katlar(adi, durumu, aciklama)" +
-                                          $" VALUES('{adi}', '{durumu}', '{aciklama}')";
-        try
-        {
-
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Kat başarılı bir şekilde eklendi");
-            else
+            string sqlKomutu = "SELECT * FROM katlar";
+            try
             {
-                MessageBox.Show("Kat eklenemedi.");
-                return false;
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                da.Fill(dt);
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
-        return true;
+        return dt;
     }
 
-    // "Katlar" tablosu içerisinde, ID değeri verilen katın bilgilerini günceller.
-    public bool katGuncelle(int katID, string adi, string durumu, string aciklama)
+    public void katEkle(string adi, string durumu, string aciklama)
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"UPDATE Katlar " +
-                           $"SET adi='{adi}', durumu='{durumu}', aciklama='{aciklama}' " +
-                           $"WHERE katID='{katID}'";
-        try
+        bool sonuc = false;
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Kat bilgileri başarılı bir şekilde güncellendi");
-            else
+            string sqlKomutu = "INSERT INTO Katlar(adi, durumu, aciklama) VALUES(@adi, @durumu, @aciklama)";
+            try
             {
-                MessageBox.Show("Kat bilgileri güncellenemedi.");
-                return false;
+
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                komut.Parameters.AddWithValue("@adi", adi);
+                komut.Parameters.AddWithValue("@durumu", durumu);
+                komut.Parameters.AddWithValue("@aciklama", aciklama);
+
+                sonuc = (komut.ExecuteNonQuery() == 1) ? true : false;
+                if (!sonuc)
+                    MessageBox.Show("Kat eklenemedi.");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
-        return true;
     }
 
-    // "Katlar" tablosu içerisinde, ID değeri verilen katın bilgilerini siler.
-    public bool katSil(int katID)
+    public void katGuncelle(int katID, string adi, string durumu, string aciklama)
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"DELETE FROM Katlar WHERE katID='{katID}'";
-        try
+        bool sonuc = false;
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
+            List<string> setKisimlari = new List<string>();
+            MySqlCommand komut = new MySqlCommand();
 
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Kat bilgileri başarılı bir şekilde silindi");
-            else
+            if (!string.IsNullOrEmpty(adi))
             {
-                MessageBox.Show("Kat bilgileri silinemedi.");
-                return false;
+                setKisimlari.Add("adi = @adi");
+                komut.Parameters.AddWithValue("@adi", adi);
+            }
+
+            if (!string.IsNullOrEmpty(durumu))
+            {
+                setKisimlari.Add("durumu = @durumu");
+                komut.Parameters.AddWithValue("@durumu", durumu);
+            }
+
+            if (!string.IsNullOrEmpty(aciklama))
+            {
+                setKisimlari.Add("aciklama = @aciklama");
+                komut.Parameters.AddWithValue("@aciklama", aciklama);
+            }
+
+            if (setKisimlari.Count == 0)
+                MessageBox.Show("Güncellenecek herhangi bir alan belirtilmedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            string sqlKomutu = $"UPDATE katlar SET {string.Join(", ", setKisimlari)} WHERE katID = @katID";
+            komut.CommandText = sqlKomutu;
+            komut.Parameters.AddWithValue("@katID", katID);
+            komut.Connection = baglanti;
+
+            try
+            {
+                baglanti.Open();
+                sonuc = (komut.ExecuteNonQuery() == 1) ? true : false;
+                if (!sonuc)
+                    MessageBox.Show("Kat bilgileri güncellenemedi.");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
+    }
+
+    public void katSil(int katID)
+    {
+
+        bool sonuc = false;
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
+            string sqlKomutu = "DELETE FROM Katlar WHERE katID=@katID";
+            try
+            {
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                komut.Parameters.AddWithValue("@katID", katID);
+
+                sonuc = (komut.ExecuteNonQuery() == 1) ? true : false;
+                if (!sonuc)
+                    MessageBox.Show("Kat bilgileri silinemedi.");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-        return true;
     }
 
     public int masaSayisi(int katID)
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"SELECT * FROM Masalar WHERE katID='{katID}'";
-        SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-        try
+        int masaSayisi = 0;
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            baglanti.Open();
-            SqlDataAdapter da = new SqlDataAdapter(komut);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            baglanti.Close();
-            return dt.Rows.Count;
+            string sqlKomutu = "SELECT COUNT(*) FROM Masalar WHERE katID=@katID";
+            try
+            {
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                komut.Parameters.AddWithValue("@katID", katID);
+
+                masaSayisi = Convert.ToInt32(komut.ExecuteScalar());
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-        return int.Parse("-1");
+        return masaSayisi;
     }
 }

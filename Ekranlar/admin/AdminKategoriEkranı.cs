@@ -1,14 +1,13 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace RestoranModulu.Ekranlar.admin
 {
     public partial class AdminKategoriEkranı : Form
     {
         VTKategoriler vt = new VTKategoriler();
-
-        // Kategori bilgileri değişkenleri.
-        int kategoriID = 0;
-        string adi, aciklama = null;
+        public int kategoriID = 0;
+        public string adi, aciklama = null;
 
         public AdminKategoriEkranı()
         {
@@ -22,12 +21,9 @@ namespace RestoranModulu.Ekranlar.admin
             if (mesaj == null)
             {
                 degerAtama();
-                // Kategori ekleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.kategoriEkle(adi, aciklama))
-                {
-                    dataGridView1.DataSource = vt.Listele();
-                    temizle();
-                }
+                vt.kategoriEkle(adi, aciklama);
+                dataGridView1.DataSource = vt.Listele();
+                temizle();
 
             }
             else
@@ -40,12 +36,9 @@ namespace RestoranModulu.Ekranlar.admin
             if (kategoriID > 0)
             {
                 degerAtama();
-                // Kategori güncelleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.kategoriGuncelle(kategoriID, adi, aciklama))
-                {
-                    dataGridView1.DataSource = vt.Listele();
-                    temizle();
-                }
+                vt.kategoriGuncelle(kategoriID, adi, aciklama);
+                dataGridView1.DataSource = vt.Listele();
+                temizle();
             }
             else
                 MessageBox.Show("Kategoriler listesi içinden bir kategori şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -57,12 +50,9 @@ namespace RestoranModulu.Ekranlar.admin
             if (kategoriID > 0)
             {
                 degerAtama();
-                // Kategori silme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.kategoriSil(kategoriID))
-                {
-                    dataGridView1.DataSource = vt.Listele();
-                    temizle();
-                }
+                vt.kategoriSil(kategoriID);
+                dataGridView1.DataSource = vt.Listele();
+                temizle();
             }
             else
                 MessageBox.Show("Kategoriler listesi içinden bir kategori şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -75,20 +65,35 @@ namespace RestoranModulu.Ekranlar.admin
             temizle();
         }
 
-        // dataGridView listesinde bulunan bir satıra tıklanınca, o satır içinde bulunan bilgiler ile textBox ve comboBox'ları doldurur.
-        // Ayriyeten kategori üstünde işlem yapmak için kategoriID değerini alır.
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int satirNo = e.RowIndex;
-            if (satirNo >= 0 && satirNo < (dataGridView1.Rows.Count - 1))
+            if (satirNo >= 0 && satirNo < dataGridView1.Rows.Count)
             {
-                kategoriID = int.Parse(dataGridView1.Rows[satirNo].Cells[0].Value.ToString());
-                textBox1.Text = dataGridView1.Rows[satirNo].Cells[1].Value.ToString();
-                textBox2.Text = dataGridView1.Rows[satirNo].Cells[2].Value.ToString();
+                var satir = dataGridView1.Rows[satirNo];
+
+                try
+                {
+                    kategoriID = Convert.ToInt32(satir.Cells[0].Value);
+                    textBox1.Text = satir.Cells[1].Value.ToString() ?? "";
+                    textBox2.Text = satir.Cells[2].Value.ToString() ?? "";
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Satır verileri alınırken bir hata oluştu: " + ex.Message);
+                }
             }
         }
 
-        // Veri tablosunda NULL değer alamayan sütunlar için gerekli boşluk kontrolleri yapılır.
+        public void temizle()
+        {
+            textBox1.Clear();
+            textBox2.Clear();
+            kategoriID = 0;
+            adi = null;
+            aciklama = null;
+        }
+
         public string boslukKontrolu()
         {
             string mesaj = null;
@@ -97,15 +102,6 @@ namespace RestoranModulu.Ekranlar.admin
             return mesaj;
         }
 
-        // Hem ekranda ki alanları temizler hem de kullanılan değişkenlerin değerlerini standart konuma getirir.
-        public void temizle()
-        {
-            // Ekranın temizlenmesi.
-            textBox1.Text = null;
-            textBox2.Text = null;
-        }
-
-        // Ürün değişkenlerine değer atama işlemleri
         public void degerAtama()
         {
             if (!string.IsNullOrEmpty(textBox1.Text))

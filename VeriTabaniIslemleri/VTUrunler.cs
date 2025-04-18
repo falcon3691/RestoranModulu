@@ -1,158 +1,173 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Windows.Forms;
 
 public class VTUrunler
 {
-    // Veri tabanı bağlantısı.
-    public string baglantiKodu = "Data Source=DESKTOP-HSH38D0;Initial Catalog=RestoranModulu;Integrated Security=True";
+    public string baglantiKodu = "Server=localhost; Database=restoranmodulu; Uid=root; Pwd=Malukat3691.;";
 
-    // Tablo üzerindeki verileri çeker ve Data Table olarak geri döndürür.
     public DataTable Listele(int menuID = 0)
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"SELECT * FROM Urunler";
+        DataTable dt = new DataTable();
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
+        {
+            string sqlKomutu = "SELECT * FROM urunler";
 
-        if (menuID != 0)
-            sqlKomutu += $" WHERE menuID='{menuID}'";
-        SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-        try
-        {
-            baglanti.Open();
-            SqlDataAdapter da = new SqlDataAdapter(komut);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            baglanti.Close();
-            return dt;
+            if (menuID != 0)
+                sqlKomutu += " WHERE menuID=@menuID";
+
+            try
+            {
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                komut.Parameters.AddWithValue("@menuID", menuID);
+
+                MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                da.Fill(dt);
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-        return null;
+        return dt;
     }
-    public bool urunEkle(string adi, int kategoriID, int fiyati, int miktar, string durumu = null,
+    public void urunEkle(string adi, int kategoriID, int fiyati, int miktar, string durumu = null,
                               string resimYolu = null, string aciklama = null)
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"INSERT INTO Urunler(adi, kategoriID, fiyati, miktar, resimYolu, durumu, aciklama)" +
-                                          $" VALUES('{adi}', '{kategoriID}', '{fiyati}', '{miktar}', '{resimYolu}', '{durumu}', '{aciklama}')";
-        try
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Ürün başarılı bir şekilde eklendi");
-            else
+            string sqlKomutu = "INSERT INTO urunler(adi, kategoriID, fiyati, miktar, resimYolu, durumu, aciklama)" +
+                                              " VALUES(@adi, @kategoriID, @fiyati, @miktar, @resimYolu, @durumu, @aciklama)";
+            try
             {
-                MessageBox.Show("Ürün eklenemedi.");
-                return false;
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                komut.Parameters.AddWithValue("@adi", adi);
+                komut.Parameters.AddWithValue("@kategoriID", kategoriID);
+                komut.Parameters.AddWithValue("@fiyati", fiyati);
+                komut.Parameters.AddWithValue("@miktar", miktar);
+                komut.Parameters.AddWithValue("@resimYolu", resimYolu);
+                komut.Parameters.AddWithValue("@durumu", durumu);
+                komut.Parameters.AddWithValue("@aciklama", aciklama);
+
+                bool sonuc = komut.ExecuteNonQuery() == 1;
+                if (!sonuc)
+                    MessageBox.Show("Ürün eklenemedi.");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
-        return true;
     }
 
-    // "Urunler" tablosu içerisinde, ID değeri verilen ürünün bilgilerini günceller.
-    public bool urunGuncelle(int urunID, string adi, int kategoriID, int fiyati, int miktar, string durumu = null,
-                              string resimYolu = null, string aciklama = null)
+    public void urunGuncelle(int urunID, string adi, string durumu, string resimYolu, string aciklama, int kategoriID = 0, int fiyati = 0, int miktar = 0)
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"UPDATE Urunler " +
-                           $"SET adi='{adi}', kategoriID='{kategoriID}', fiyati='{fiyati}', miktar='{miktar}', durumu='{durumu}', resimYolu='{resimYolu}', aciklama='{aciklama}' " +
-                           $"WHERE urunID='{urunID}'";
-        try
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Ürün bilgileri başarılı bir şekilde güncellendi");
-            else
+            List<string> setKisimlari = new List<string>();
+            MySqlCommand komut = new MySqlCommand();
+            if (!string.IsNullOrEmpty(adi))
             {
-                MessageBox.Show("Ürün bilgileri güncellenemedi.");
-                return false;
+                setKisimlari.Add("adi = @adi");
+                komut.Parameters.AddWithValue("@adi", adi);
+            }
+            if (!string.IsNullOrEmpty(durumu))
+            {
+                setKisimlari.Add("durumu = @durumu");
+                komut.Parameters.AddWithValue("@durumu", durumu);
+            }
+            if (!string.IsNullOrEmpty(resimYolu))
+            {
+                setKisimlari.Add("resimYolu = @resimYolu");
+                komut.Parameters.AddWithValue("@resimYolu", resimYolu);
+            }
+            if (!string.IsNullOrEmpty(aciklama))
+            {
+                setKisimlari.Add("aciklama = @aciklama");
+                komut.Parameters.AddWithValue("@aciklama", aciklama);
+            }
+            if (kategoriID != 0)
+            {
+                setKisimlari.Add("kategoriID = @kategoriID");
+                komut.Parameters.AddWithValue("@kategoriID", kategoriID);
+            }
+            else if (kategoriID == 0)
+                setKisimlari.Add("kategoriID = 0");
+
+            if (fiyati != 0)
+            {
+                setKisimlari.Add("fiyati = @fiyati");
+                komut.Parameters.AddWithValue("@fiyati", fiyati);
+            }
+            else if (fiyati == 0)
+                setKisimlari.Add("fiyati = 0");
+
+            if (miktar != 0)
+            {
+                setKisimlari.Add("miktar = @miktar");
+                komut.Parameters.AddWithValue("@miktar", miktar);
+            }
+            else if (miktar == 0)
+                setKisimlari.Add("miktar = 0");
+
+            if (setKisimlari.Count == 0)
+                MessageBox.Show("Güncellenecek herhangi bir alan belirtilmedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            string sqlKomutu = $"UPDATE urunler SET {string.Join(", ", setKisimlari)} WHERE urunID = @urunID";
+            komut.CommandText = sqlKomutu;
+            komut.Parameters.AddWithValue("@urunID", urunID);
+            komut.Connection = baglanti;
+            try
+            {
+                baglanti.Open();
+                bool sonuc = komut.ExecuteNonQuery() == 1;
+                if (!sonuc)
+                    MessageBox.Show("Ürün bilgileri güncellenemedi.");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
-        return true;
     }
 
-    // "Urunler" tablosu içerisinde, ID değeri verilen ürünün bilgilerini siler.
-    public bool urunSil(int urunID)
+    public void urunSil(int urunID)
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"DELETE FROM Urunler WHERE urunID='{urunID}'";
-        try
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Ürün bilgileri başarılı bir şekilde silindi");
-            else
+            string sqlKomutu = "DELETE FROM Urunler WHERE urunID=@urunID";
+            try
             {
-                MessageBox.Show("Ürün bilgileri silinemedi.");
-                return false;
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                komut.Parameters.AddWithValue("@urunID", urunID);
+                bool sonuc = komut.ExecuteNonQuery() == 1;
+                if (!sonuc)
+                    Console.Out.WriteLine("Ürün bilgileri başarılı bir şekilde silindi");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
-        return true;
     }
 
-    //  "Urunler" tablosu içinde verilen değerlere göre filtreleme yapar.
-    public DataTable urunFiltrele(string adi = null, int kategoriID = 0, int fiyati = 0, int miktar = 0,
-                                   string durumu = null, string resimYolu = null, string aciklama = null)
+    public DataTable urunFiltrele(string adi, string durumu, string resimYolu, string aciklama, int kategoriID = 0, int fiyati = 0, int miktar = 0)
     {
-        using (SqlConnection baglanti = new SqlConnection(baglantiKodu))
+        DataTable dt = new DataTable();
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            List<string> conditions = new List<string>(); // Filtreleri tutacak liste
-            SqlCommand komut = new SqlCommand();
+            List<string> conditions = new List<string>();
+            MySqlCommand komut = new MySqlCommand();
 
             if (!string.IsNullOrEmpty(adi))
             {
                 conditions.Add("adi LIKE @adi");
                 komut.Parameters.AddWithValue("@adi", "%" + adi + "%");
-            }
-            if (!string.IsNullOrEmpty(kategoriID.ToString()))
-            {
-                conditions.Add("kategoriID LIKE @kategoriID");
-                komut.Parameters.AddWithValue("@kategoriID", kategoriID);
-            }
-            if (!string.IsNullOrEmpty(fiyati.ToString()))
-            {
-                conditions.Add("fiyati LIKE @fiyati");
-                komut.Parameters.AddWithValue("@fiyati", fiyati);
-            }
-            if (!string.IsNullOrEmpty(miktar.ToString()))
-            {
-                conditions.Add("miktar = @miktar");
-                komut.Parameters.AddWithValue("@miktar", miktar);
             }
             if (!string.IsNullOrEmpty(durumu))
             {
@@ -169,15 +184,25 @@ public class VTUrunler
                 conditions.Add("aciklama LIKE @aciklama");
                 komut.Parameters.AddWithValue("@aciklama", "%" + aciklama + "%");
             }
-
-            // SQL Sorgusunu oluşturma
-            string sqlKomutu = "SELECT * FROM Urunler";
-            if (conditions.Count > 0)
+            if (kategoriID != 0)
             {
-                sqlKomutu += " WHERE " + string.Join(" OR ", conditions); // OR yerine AND kullanıldı, istenirse değiştirilebilir
+                conditions.Add("kategoriID = @kategoriID");
+                komut.Parameters.AddWithValue("@kategoriID", kategoriID);
             }
-            else
-                return null;
+            if (fiyati != 0)
+            {
+                conditions.Add("fiyati = @fiyati");
+                komut.Parameters.AddWithValue("@fiyati", fiyati);
+            }
+            if (miktar != 0)
+            {
+                conditions.Add("miktar = @miktar");
+                komut.Parameters.AddWithValue("@miktar", miktar);
+            }
+
+            string sqlKomutu = "SELECT * FROM urunler";
+            if (conditions.Count > 0)
+                sqlKomutu += " WHERE " + string.Join(" OR ", conditions);
 
             komut.CommandText = sqlKomutu;
             komut.Connection = baglanti;
@@ -185,28 +210,15 @@ public class VTUrunler
             try
             {
                 baglanti.Open();
-                SqlDataAdapter da = new SqlDataAdapter(komut);
-                DataTable dt = new DataTable();
+                MySqlDataAdapter da = new MySqlDataAdapter(komut);
                 da.Fill(dt);
-                baglanti.Close();
-
-                if (dt.Rows.Count == 0)
-                {
-                    MessageBox.Show("Girilen bilgilere göre bir ürün bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return null;
-                }
-                else
-                {
-                    return dt;
-                }
             }
             catch (Exception hata)
             {
-                baglanti.Close();
                 MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
             }
         }
+        return dt;
     }
 
 }

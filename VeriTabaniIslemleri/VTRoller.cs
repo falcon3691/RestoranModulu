@@ -1,123 +1,122 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Windows.Forms;
 
 public class VTRoller
 {
+    public string baglantiKodu = "Server=localhost; Database=restoranmodulu; Uid=root; Pwd=Malukat3691.;";
 
-    // Veri tabanı bağlantısı.
-    public string baglantiKodu = "Data Source=DESKTOP-HSH38D0;Initial Catalog=RestoranModulu;Integrated Security=True";
-
-    // Tablo üzerindeki verileri çeker ve Data Table olarak geri döndürür.
     public DataTable Listele()
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"SELECT * FROM Roller";
-        SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-        try
+        DataTable dt = new DataTable();
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            baglanti.Open();
-            SqlDataAdapter da = new SqlDataAdapter(komut);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            baglanti.Close();
-            return dt;
-        }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-        return null;
-    }
-
-    public bool rolEkle(string adi, string aciklama = null, string durumu = null)
-    {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"INSERT INTO Roller(adi, aciklama, durumu)" +
-                                          $" VALUES('{adi}', '{aciklama}', '{durumu}')";
-        try
-        {
-
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Rol başarılı bir şekilde eklendi");
-            else
+            string sqlKomutu = $"SELECT * FROM Roller";
+            MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+            try
             {
-                MessageBox.Show("Rol eklenemedi.");
-                return false;
+                baglanti.Open();
+                MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                da.Fill(dt);
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
-        return true;
+        return dt;
     }
 
-    // "Roller" tablosu içerisinde, ID değeri verilen rolün bilgilerini günceller.
-    public bool rolGuncelle(int rolID, string adi, string aciklama = null, string durumu = null)
+    public void rolEkle(string adi, string aciklama, string durumu)
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"UPDATE Roller " +
-                           $"SET adi='{adi}', aciklama='{aciklama}', durumu='{durumu}' " +
-                           $"WHERE rolID='{rolID}'";
-        try
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Rol bilgileri başarılı bir şekilde güncellendi");
-            else
+            string sqlKomutu = "INSERT INTO Roller(adi, aciklama, durumu) VALUES(@adi, @aciklama, @durumu)";
+            try
             {
-                MessageBox.Show("Rol bilgileri güncellenemedi.");
-                return false;
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                komut.Parameters.AddWithValue("@adi", adi);
+                komut.Parameters.AddWithValue("@aciklama", aciklama);
+                komut.Parameters.AddWithValue("@durumu", durumu);
+
+                bool sonuc = komut.ExecuteNonQuery() == 1;
+                if (!sonuc)
+                    MessageBox.Show("Rol eklenemedi.");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
-        return true;
     }
 
-    // "Roller" tablosu içerisinde, ID değeri verilen rolün bilgilerini siler.
-    public bool rolSil(int rolID)
+    public void rolGuncelle(int rolID, string adi, string aciklama, string durumu)
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"DELETE FROM Roller WHERE rolID='{rolID}'";
-        try
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Rol bilgileri başarılı bir şekilde silindi");
-            else
+            List<string> setKisimlari = new List<string>();
+            MySqlCommand komut = new MySqlCommand();
+            if (!string.IsNullOrEmpty(adi))
             {
-                MessageBox.Show("Rol bilgileri silinemedi.");
-                return false;
+                setKisimlari.Add("adi = @adi");
+                komut.Parameters.AddWithValue("@adi", adi);
+            }
+
+            if (!string.IsNullOrEmpty(aciklama))
+            {
+                setKisimlari.Add("aciklama = @aciklama");
+                komut.Parameters.AddWithValue("@aciklama", aciklama);
+            }
+
+            if (!string.IsNullOrEmpty(durumu))
+            {
+                setKisimlari.Add("durumu = @durumu");
+                komut.Parameters.AddWithValue("@durumu", durumu);
+            }
+            if (setKisimlari.Count == 0)
+                MessageBox.Show("Güncellenecek herhangi bir alan belirtilmedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            string sqlKomutu = $"UPDATE roller SET {string.Join(", ", setKisimlari)} WHERE rolID = @rolID";
+            komut.CommandText = sqlKomutu;
+            komut.Parameters.AddWithValue("@rolID", rolID);
+            komut.Connection = baglanti;
+
+            try
+            {
+                baglanti.Open();
+                bool sonuc = komut.ExecuteNonQuery() == 1;
+                if (!sonuc)
+                    MessageBox.Show("Rol bilgileri güncellenemedi.");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
+    }
+
+    public void rolSil(int rolID)
+    {
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
+            string sqlKomutu = "DELETE FROM Roller WHERE rolID=@rolID";
+            try
+            {
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                komut.Parameters.AddWithValue("@rolID", rolID);
+
+                bool sonuc = komut.ExecuteNonQuery() == 1;
+                if (!sonuc)
+                    MessageBox.Show("Rol bilgileri silinemedi.");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-        return true;
     }
 }

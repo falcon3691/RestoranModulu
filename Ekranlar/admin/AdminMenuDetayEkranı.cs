@@ -1,4 +1,6 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace RestoranModulu.Ekranlar.admin
@@ -6,17 +8,14 @@ namespace RestoranModulu.Ekranlar.admin
     public partial class AdminMenuDetayEkranı : Form
     {
         VTMenu vt = new VTMenu();
-        VTUrunler vtUrun = new VTUrunler();
-
-        // Menü bilgileri değişkenleri
         int menuID = 0;
         string adi, aciklama = null;
 
-        // Ürün bilgileri değişkenleri
+        VTUrunler vtUrun = new VTUrunler();
         int urunID, kategoriID, fiyati, miktar = 0;
-        string urunAdi, durumu, resimYolu, urunAciklama = null;
+        string urunAdi = null;
 
-        public AdminMenuDetayEkranı(int menuID = 0)
+        public AdminMenuDetayEkranı(int menuID = 0, string adi = null)
         {
             InitializeComponent();
             if (menuID != 0)
@@ -25,9 +24,16 @@ namespace RestoranModulu.Ekranlar.admin
                 DataTable dt = vt.Listele(menuID);
                 textBox5.Text = dt.Rows[0][1].ToString();
                 textBox4.Text = dt.Rows[0][2].ToString();
-
-                dataGridView1.DataSource = vt.urunleriListele(menuID);
             }
+            else
+            {
+                DataTable dt = vt.sonMenuyuAl();
+                this.menuID = Convert.ToInt32(dt.Rows[0][0]);
+            }
+
+            if (adi != null)
+                this.adi = adi;
+            dataGridView1.DataSource = vt.urunleriListele(menuID);
             dataGridView2.DataSource = vtUrun.Listele();
         }
 
@@ -35,10 +41,14 @@ namespace RestoranModulu.Ekranlar.admin
         private void button1_Click(object sender, System.EventArgs e)
         {
             urunDegerAtama();
-            if (vtUrun.urunFiltrele(urunAdi, kategoriID, fiyati, miktar) != null)
-                dataGridView2.DataSource = vtUrun.urunFiltrele(urunAdi, kategoriID, fiyati, miktar);
+            DataTable filtrelenmisListe = vt.urunFiltrele(urunAdi, kategoriID, fiyati, miktar);
+            if (filtrelenmisListe.Rows.Count > 0)
+                dataGridView2.DataSource = filtrelenmisListe ?? vtUrun.Listele();
             else
+            {
+                MessageBox.Show("Girilen bilgilere göre bir ürün bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 dataGridView2.DataSource = vtUrun.Listele();
+            }
         }
 
         // Hepsini Listele butonu
@@ -48,28 +58,24 @@ namespace RestoranModulu.Ekranlar.admin
             temizle();
         }
 
+        // Menüyü Temizle butonu.
+        private void button3_Click(object sender, System.EventArgs e)
+        {
+            vt.menuyuTemizle(menuID);
+            dataGridView1.DataSource = vt.urunleriListele(menuID);
+            dataGridView2.DataSource = vtUrun.Listele();
+
+        }
+
         // Menüyü Kaydet butonu
         private void button4_Click(object sender, System.EventArgs e)
         {
             string mesaj = boslukKontrolu();
             if (mesaj == null)
             {
-                if (menuID == 0)
-                {
-                    degerAtama();
-                    if (vt.menuEkle(adi, aciklama))
-                    {
-                        this.Close();
-                    }
-                }
-                else
-                {
-                    degerAtama();
-                    if (vt.menuGuncelle(menuID, adi, aciklama))
-                    {
-                        this.Close();
-                    }
-                }
+                menuDegerAtama();
+                vt.menuGuncelle(menuID, adi, aciklama);
+                this.Close();
             }
             else
                 MessageBox.Show(mesaj, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -78,77 +84,77 @@ namespace RestoranModulu.Ekranlar.admin
         // Menüyü Sil butonu
         private void button5_Click(object sender, System.EventArgs e)
         {
-            if (menuID == 0)
-            {
-                this.Close();
-            }
-            else
-            {
-                // Menü silme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.menuSil(menuID))
-                {
-                    this.Close();
-                }
-            }
-
-        }
-
-        // Menüyü Temizle butonu.
-        private void button3_Click(object sender, System.EventArgs e)
-        {
-            if (vt.menuyuTemizle(menuID))
-            {
-                dataGridView1.DataSource = vt.urunleriListele(menuID);
-                dataGridView2.DataSource = vtUrun.Listele();
-            }
+            vt.menuSil(menuID);
+            this.Close();
         }
 
         // QR Kod Oluştur butonu
         private void button6_Click(object sender, System.EventArgs e)
         {
-
+            if (menuID > 0)
+            {
+                Bitmap qrKod = vt.qrOlustur(adi);
+                if (qrKod == null)
+                {
+                    MessageBox.Show("QR kod oluşturulamadı.");
+                    return;
+                }
+                AdminMenuQR form = new AdminMenuQR(qrKod);
+                this.SuspendLayout();
+                form.ShowDialog();
+            }
+            else
+                MessageBox.Show("Menüler listesinden bir menü seçilmeli.");
         }
 
-        // Tüm Ürünler listesinde bulunan ürüne tıklanınca, menuID değeri değiştirilir ve Menüdeki Ürünler listesi güncellenir.
+        // Menüdeki ürünler listesinden seçilen ürünün, menuID değeri 0 yapılır ve liste güncellenir.
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            int satirNo = e.RowIndex;
+            if (satirNo >= 0 && satirNo < (dataGridView1.Rows.Count - 1))
+            {
+                var satir = dataGridView1.Rows[satirNo];
+                try
+                {
+                    if (menuID != 0)
+                    {
+                        urunID = Convert.ToInt32(satir.Cells[0].Value);
+                        vt.menudenUrunSil(menuID, urunID);
+                        dataGridView1.DataSource = vt.urunleriListele(menuID);
+                        dataGridView2.DataSource = vtUrun.Listele();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Satır verileri alınırken bir sorun oluştu: " + ex.Message);
+                }
+            }
+        }
+
+        // Tüm ürünler listesinden seçilen ürünün, menuID değeri değiştirilir ve liste güncellenir.
         private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int satirNo = e.RowIndex;
             if (satirNo >= 0 && satirNo < (dataGridView2.Rows.Count - 1))
             {
-                if (menuID != 0)
+                var satir = dataGridView2.Rows[satirNo];
+                try
                 {
-                    urunID = int.Parse(dataGridView2.Rows[satirNo].Cells[0].Value.ToString());
-
-
-                    if (vt.menuyeUrunEkle(menuID, urunID))
+                    if (menuID != 0)
                     {
+                        urunID = Convert.ToInt32(satir.Cells[0].Value);
+                        vt.menuyeUrunEkle(menuID, urunID);
                         dataGridView1.DataSource = vt.urunleriListele(menuID);
                         dataGridView2.DataSource = vtUrun.Listele();
                     }
                 }
-            }
-        }
-
-        // Menüdeki Ürünler listesinde seçilen ürünün, menuID değeri 0 yapılır ve Menüdeki Ürünler listesi güncellenir.
-        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            int satirNo = e.RowIndex;
-            if (satirNo >= 0)
-            {
-                if (menuID != 0)
+                catch (Exception ex)
                 {
-                    urunID = int.Parse(dataGridView1.Rows[satirNo].Cells[0].Value.ToString());
-
-                    if (vt.menudenUrunSil(menuID, urunID))
-                    {
-                        dataGridView1.DataSource = vt.urunleriListele(menuID);
-                        dataGridView2.DataSource = vtUrun.Listele();
-                    }
+                    MessageBox.Show("Satır verileri alınırken bir sorun oluştu: " + ex.Message);
                 }
             }
         }
 
-        // Veri tablosunda NULL değer alamayan sütunlar için gerekli boşluk kontrolleri yapılır.
         public string boslukKontrolu()
         {
             string mesaj = null;
@@ -157,16 +163,13 @@ namespace RestoranModulu.Ekranlar.admin
             return mesaj;
         }
 
-        // Hem ekranda ki alanları temizler hem de kullanılan değişkenlerin değerlerini standart konuma getirir.
         public void temizle()
         {
-            // Ekranın temizlenmesi.
             textBox1.Text = null;
             textBox2.Text = null;
             textBox3.Text = null;
             comboBox1.Text = null;
 
-            // Kullanıcı değişkenlerinin temizlenmesi.
             urunID = 0;
             kategoriID = 0;
             fiyati = 0;
@@ -174,8 +177,7 @@ namespace RestoranModulu.Ekranlar.admin
             urunAdi = null;
         }
 
-        // Menü değişkenlerine değer atama işlemleri
-        public void degerAtama()
+        public void menuDegerAtama()
         {
             if (!string.IsNullOrEmpty(textBox5.Text))
                 adi = textBox5.Text;
@@ -185,7 +187,6 @@ namespace RestoranModulu.Ekranlar.admin
             else aciklama = null;
         }
 
-        // Ürün değişkenlerine değer atama işlemleri
         public void urunDegerAtama()
         {
             if (!string.IsNullOrEmpty(textBox1.Text))

@@ -21,7 +21,7 @@ namespace RestoranModulu.Ekranlar.garson
             this.rolID = rolID;
         }
 
-        public FlowLayoutPanel CreateKatPanel(int katId, string katAdi, string aciklama, string durumu)
+        public FlowLayoutPanel CreateKatPanel(Kat kat)
         {
             FlowLayoutPanel katPanel = new FlowLayoutPanel
             {
@@ -29,13 +29,13 @@ namespace RestoranModulu.Ekranlar.garson
                 Height = 350,
                 BorderStyle = BorderStyle.FixedSingle,
                 Padding = new Padding(10),
-                Tag = katId
+                Tag = kat,
             };
 
             // Kat Adı
             Label lblKatAdi = new Label
             {
-                Text = katAdi,
+                Text = kat.KatAdi,
                 Font = new Font("Arial", 12, FontStyle.Bold),
                 Location = new Point(30, 5),
                 AutoSize = true
@@ -47,14 +47,14 @@ namespace RestoranModulu.Ekranlar.garson
                 Width = 20,
                 Height = 20,
                 Location = new Point(5, 5),
-                BackColor = durumu == "Aktif" ? Color.Green : durumu == "Temizlik" ? Color.Red : Color.Gray,
+                BackColor = kat.Durumu == "Aktif" ? Color.Green : kat.Durumu == "Temizlik" ? Color.Red : Color.Gray,
                 BorderStyle = BorderStyle.FixedSingle
             };
 
             // Açıklama Kutusu
             Label lblAciklama = new Label
             {
-                Text = string.IsNullOrEmpty(aciklama) ? "Açıklama yok." : aciklama,
+                Text = string.IsNullOrEmpty(kat.Aciklama) ? "Açıklama yok." : kat.Aciklama,
                 Font = new Font("Arial", 10, FontStyle.Italic),
                 Location = new Point(5, 30),
                 Width = 290,
@@ -80,30 +80,31 @@ namespace RestoranModulu.Ekranlar.garson
             return katPanel;
         }
 
-        public Button CreateMasaButton(int masaId, string masaAdi, int sandalyeSayisi, int katID, string durumu)
+        public Button CreateMasaButton(Masa masa)
         {
             Button masaButton = new Button
             {
                 Width = 120,
                 Height = 120,
-                Text = $"{masaAdi}\nSandalyeler: {sandalyeSayisi}",
-                TextAlign = ContentAlignment.TopCenter,
-                BackColor = durumu == "dolu" ? Color.Red : durumu == "boş" ? Color.LightGreen : Color.Gray,
-                Tag = masaId
+                Text = $"{masa.MasaAdi}\nSandalyeler: {masa.SandalyeSayisi}",
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = new Font("Arial", 12, FontStyle.Bold),
+                BackColor = masa.Durumu == "dolu" ? Color.Red : masa.Durumu == "boş" ? Color.LightGreen : masa.Durumu == "rezerve" ? Color.Yellow : Color.Gray,
+                Tag = masa,
             };
 
-            // Masa Resmi
-            /*PictureBox masaResmi = new PictureBox
+            /*
+             PictureBox masaResmi = new PictureBox
             {
-                Image = Image.FromFile("masa.png"), // Masa resmi yolu
+                Image = Image.FromFile("masa.png"),
                 Width = 100,
                 Height = 100,
                 Location = new Point(10, 20),
                 SizeMode = PictureBoxSizeMode.StretchImage
             };
 
-            // Masa Butonuna resmi ekleme
-            masaButton.Controls.Add(masaResmi);*/
+            masaButton.Controls.Add(masaResmi);
+            */
             return masaButton;
         }
 
@@ -112,127 +113,93 @@ namespace RestoranModulu.Ekranlar.garson
             Button tiklananButon = sender as Button;
             if (tiklananButon != null)
             {
-                int masaID = (int)tiklananButon.Tag;
-
-                // Yeni ekranı aç, masaID'yi parametre olarak gönder
-                MasaDetay detayForm = new MasaDetay(masaID, kullaniciID, rolID);
+                Masa masa = tiklananButon.Tag as Masa;
+                MasaDetay detayForm = new MasaDetay(masa.MasaID, kullaniciID, rolID);
                 this.SuspendLayout();
-                detayForm.ShowDialog(); // veya Show(), ihtiyaca göre
+                detayForm.ShowDialog();
             }
         }
 
         public void LoadKatsAndMasas()
         {
-            // Veri tabanında kayıtlı olan katların listesi alınır ve her satırı ile ayrı ayrı işlem yapılmak üzere döngüye sokulur.
             DataTable katlar = vtKat.Listele();
             for (int i = 0; i < katlar.Rows.Count; i++)
             {
-                // Yeni bir Kat objesi oluşturulur ve özellikleri belirlenmek üzere döngüye sokulur.
-                Kat kat = new Kat();
-                for (int j = 0; j < katlar.Columns.Count; j++)
-                {
-                    if (j == 0)
-                        kat.setKatID(int.Parse(katlar.Rows[i][j].ToString()));  // Veri tabanından, "katID" değeri alınır ve Katın katID özelliği olarak atanır.
-                    else if (j == 1)
-                        kat.setKatAdi(katlar.Rows[i][j].ToString());            // Veri tabanından, "adi" değeri alınır ve Katın katAdi özelliği olarak atanır.
-                    else if (j == 2)
-                        kat.setDurumu(katlar.Rows[i][j].ToString());            // Veri tabanından, "durumu" değeri alınır ve Katın durumu özelliği olarak atanır.
-                    else if (j == 3)
-                        kat.setAciklama(katlar.Rows[i][j].ToString());          // Veri tabanından, "aciklama" değeri alınır ve Katın aciklama özelliği olarak atanır.
-                }
+                var katSatir = katlar.Rows[i];
 
-                // Oluşturulan katın özellikleri ile yeni bir Kat Paneli oluşturulur.
-                FlowLayoutPanel katPanel = CreateKatPanel(kat.getKatID(), kat.getKatAdi(), kat.getAciklama(), kat.getDurumu());
+                Kat kat = new Kat(
+                    Convert.ToInt32(katSatir["katID"]),
+                    katSatir["adi"].ToString() ?? "",
+                    katSatir["durumu"].ToString() ?? "",
+                    katSatir["aciklama"].ToString() ?? ""
+                );
 
-                // Kat içinde bulunan masaları yerleştirmek için yeni bir Masa Paneli oluşturulur.
+                FlowLayoutPanel katPanel = CreateKatPanel(kat);
                 FlowLayoutPanel masaPanel = katPanel.Controls.OfType<FlowLayoutPanel>().FirstOrDefault();
 
-                // Oluşturulan kat objesinin "katID" değerine sahip masaların listesi alınır ve
-                // her satırı ile ayrı ayrı işlem yapılmak üzere döngüye sokulur.
-                DataTable masalar = vtMasa.Listele(true, kat.getKatID());
+                DataTable masalar = vtMasa.Listele(true, kat.KatID);
                 for (int x = 0; x < masalar.Rows.Count; x++)
                 {
-                    // Yeni bir Masa objesi oluşturulur.
-                    Masa masa = new Masa();
-                    for (int y = 0; y < masalar.Columns.Count; y++)
-                    {
-                        if (y == 0)
-                            masa.setMasaID(int.Parse(masalar.Rows[x][y].ToString()));           // Veri tabanından, "masaID" değeri alınır ve Masanın masaID özelliği olarak atanır.
-                        else if (y == 1)
-                            masa.setMasaAdi(masalar.Rows[x][y].ToString());                     // Veri tabanından, "adi" değeri alınır ve Masanın masaAdi özelliği olarak atanır.
-                        else if (y == 2)
-                            masa.setSandalyeSayisi(int.Parse(masalar.Rows[x][y].ToString()));   // Veri tabanından, "sandalyeSayisi" değeri alınır ve Masanın sandalyeSayisi özelliği olarak atanır.
-                        else if (y == 3)
-                            masa.setDurumu(masalar.Rows[x][y].ToString());                      // Veri tabanından, "masaDurumu" değeri alınır ve Masanın durumu özelliği olarak atanır.
-                        else if (y == 4)
-                            masa.setAciklama(masalar.Rows[x][y].ToString());                    // Veri tabanından, "aciklama" değeri alınır ve Masanın aciklama özelliği olarak atanır.
-                        else if (y == 5)
-                            masa.setKatID(int.Parse(masalar.Rows[x][y].ToString()));            // Veri tabanından, "katID" değeri alınır ve Masanın katID özelliği olarak atanır.
-                    }
+                    var masaSatir = masalar.Rows[x];
 
-                    // Oluşturulan masanın özellikleri ile yeni bir masaButton oluşturulur.
-                    Button masaButton = CreateMasaButton(masa.getMasaID(), masa.getMasaAdi(), masa.getSandalyeSayisi(), masa.getKatID(), masa.getDurumu());
+                    Masa masa = new Masa(
+                        Convert.ToInt32(masaSatir["masaID"]),
+                        masaSatir["adi"].ToString() ?? "",
+                        Convert.ToInt32(masaSatir["sandalyeSayisi"]),
+                        Convert.ToInt32(masaSatir["katID"]),
+                        masaSatir["masaDurumu"].ToString() ?? "",
+                        masaSatir["aciklama"].ToString() ?? ""
+                    );
 
+                    Button masaButton = CreateMasaButton(masa);
                     masaButton.Click += MasaButton_Click;
-                    // ID değeri Tag içine atanıyor
-                    masaButton.Tag = masa.getMasaID();
-                    // Oluşturulan masaButton, daha önce oluşturulan Masa Panelinin içine yerleştirilir.
                     masaPanel.Controls.Add(masaButton);
                 }
-
-                // Tasarımı tamamlanan kat ekranda gösterilir. 
                 flowLayoutPanel1.Controls.Add(katPanel);
             }
-
         }
-
     }
-
     public class Kat
     {
-        private int katID;
-        public int getKatID() { return this.katID; }
-        public void setKatID(int katID) { this.katID = katID; }
+        public int KatID { get; }
 
-        private string katAdi;
-        public string getKatAdi() { return this.katAdi; }
-        public void setKatAdi(string katAdi) { this.katAdi = katAdi; }
+        public string KatAdi { get; }
 
-        private string durumu;
-        public string getDurumu() { return this.durumu; }
-        public void setDurumu(string durumu) { this.durumu = durumu; }
+        public string Durumu { get; }
 
-        private string aciklama;
-        public string getAciklama() { return this.aciklama; }
-        public void setAciklama(string aciklama) { this.aciklama = aciklama; }
+        public string Aciklama { get; }
 
+        public Kat(int katID, string katAdi, string durumu, string aciklama)
+        {
+            this.KatID = katID;
+            this.KatAdi = katAdi;
+            this.Durumu = durumu;
+            this.Aciklama = aciklama;
+        }
     }
 
     public class Masa
     {
-        private int masaID;
-        public int getMasaID() { return this.masaID; }
-        public void setMasaID(int masaID) { this.masaID = masaID; }
+        public int MasaID { get; }
 
-        private string masaAdi;
-        public string getMasaAdi() { return this.masaAdi; }
-        public void setMasaAdi(string masaAdi) { this.masaAdi = masaAdi; }
+        public string MasaAdi { get; }
 
-        private int sandalyeSayisi;
-        public int getSandalyeSayisi() { return this.sandalyeSayisi; }
-        public void setSandalyeSayisi(int sandalyeSayisi) { this.sandalyeSayisi = sandalyeSayisi; }
+        public int SandalyeSayisi { get; }
 
-        private int katID;
-        public int getKatID() { return this.katID; }
-        public void setKatID(int katID) { this.katID = katID; }
+        public int KatID { get; }
 
-        private string durumu;
-        public string getDurumu() { return this.durumu; }
-        public void setDurumu(string durumu) { this.durumu = durumu; }
+        public string Durumu { get; }
 
-        private string aciklama;
-        public string getAciklama() { return this.aciklama; }
-        public void setAciklama(string aciklama) { this.aciklama = durumu; }
+        public string Aciklama { get; }
+
+        public Masa(int masaID, string masaAdi, int sandalyeSayisi, int katID, string durumu, string aciklama)
+        {
+            this.MasaID = masaID;
+            this.MasaAdi = masaAdi;
+            this.SandalyeSayisi = sandalyeSayisi;
+            this.KatID = katID;
+            this.Durumu = durumu;
+            this.Aciklama = aciklama;
+        }
     }
-
 }

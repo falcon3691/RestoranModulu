@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace RestoranModulu.Ekranlar.admin
@@ -12,35 +14,33 @@ namespace RestoranModulu.Ekranlar.admin
         string adi, masaDurumu, aciklama = null;
         int masaID, sandalyeSayisi, katID = 0;
 
-        public AdminMasaEkranı(string formAdi = null, int katID = 0)
+        public AdminMasaEkranı(int katID = 0)
         {
             InitializeComponent();
-            // Bu ekran direkt olarak açılmaz, AdminKatEkranı üzerinden açılırsa, yapılacak özel işlemler
-            if (formAdi == "AdminKatEkranı")
+
+            if (katID != 0)
             {
                 this.katID = katID;
+                Panel[] aktifPaneller = new[] { panel4, panel6 };
+                Panel[] pasifPaneller = new[] { panel1, panel3, panel5 };
 
-                // Panel 4 ve Panel 6 gösterilir ve etkinleştirilir.
-                panel4.Parent = this;
-                panel6.Parent = this;
+                foreach (var panel in aktifPaneller.Concat(pasifPaneller))
+                    panel.Parent = this;
 
-                panel4.Visible = true;
-                panel6.Visible = true;
-                panel4.Enabled = true;
-                panel6.Enabled = true;
+                foreach (var panel in aktifPaneller)
+                {
+                    panel.Visible = true;
+                    panel.Enabled = true;
+                }
 
+                foreach (var panel in pasifPaneller)
+                {
+                    panel.Visible = false;
+                    panel.Enabled = false;
+                }
 
-                // Panel 1, Panel 3 ve Panel 5 gizlenir ve etkisiz hale getirilir.
-                panel1.Visible = false;
-                panel3.Visible = false;
-                panel5.Visible = false;
-                panel1.Enabled = false;
-                panel3.Enabled = false;
-                panel5.Enabled = false;
-
-                // Boşta olan ve kata ait olan masaların listelenmesi.
                 dataGridView2.DataSource = vt.Listele(true);
-                dataGridView3.DataSource = vt.Listele(true, katID);
+                dataGridView3.DataSource = vt.Listele(false, katID);
             }
             else
                 dataGridView1.DataSource = vt.Listele();
@@ -53,22 +53,17 @@ namespace RestoranModulu.Ekranlar.admin
             if (mesaj == null)
             {
                 degerAtama();
-                // Ürün ekleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.masaEkle(adi, sandalyeSayisi, masaDurumu, katID, aciklama))
+                vt.masaEkle(adi, sandalyeSayisi, masaDurumu, katID, aciklama);
+
+                if (panel4.Visible == true)
                 {
-                    if (katID != 0)
-                    {
-                        dataGridView2.DataSource = vt.Listele(true);
-                        dataGridView3.DataSource = vt.Listele(true, katID);
-                    }
-                    else
-                    {
-                        dataGridView1.DataSource = vt.Listele();
-                        temizle();
-
-                    }
+                    dataGridView2.DataSource = vt.Listele();
+                    dataGridView3.DataSource = vt.Listele(false, katID);
                 }
+                else if (panel1.Visible == true)
+                    dataGridView1.DataSource = vt.Listele();
 
+                temizle();
             }
             else
                 MessageBox.Show(mesaj, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -80,28 +75,9 @@ namespace RestoranModulu.Ekranlar.admin
             if (masaID > 0)
             {
                 degerAtama();
-                // Masa güncelleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.masaGuncelle(masaID, adi, sandalyeSayisi, masaDurumu, aciklama, katID))
-                {
-                    dataGridView1.DataSource = vt.Listele();
-                    temizle();
-                }
-            }
-            else
-                MessageBox.Show("Masalar listesi içinden bir masa şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        // Masayı Kata Ekle butonu
-        private void button7_Click(object sender, System.EventArgs e)
-        {
-            if (masaID > 0 && katID > 0)
-            {
-                // Masayı kata ekleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.masayiKataEkle(masaID, katID))
-                {
-                    dataGridView1.DataSource = vt.Listele();
-                    temizle();
-                }
+                vt.masaGuncelle(masaID, adi, masaDurumu, aciklama, sandalyeSayisi, katID);
+                dataGridView1.DataSource = vt.Listele();
+                temizle();
             }
             else
                 MessageBox.Show("Masalar listesi içinden bir masa şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -113,32 +89,12 @@ namespace RestoranModulu.Ekranlar.admin
             if (masaID > 0)
             {
                 degerAtama();
-                // Masa silme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.masaSil(masaID))
-                {
-                    dataGridView1.DataSource = vt.Listele();
-                    temizle();
-                }
+                vt.masaSil(masaID);
+                dataGridView1.DataSource = vt.Listele();
+                temizle();
             }
             else
                 MessageBox.Show("Masalar listesi içinden bir masa şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        // Masaları Filtrele butonu
-        private void button6_Click(object sender, EventArgs e)
-        {
-            degerAtama();
-            if (vt.masaFiltrele(0, adi, sandalyeSayisi, masaDurumu, aciklama, katID) != null)
-                dataGridView1.DataSource = vt.masaFiltrele(0, adi, sandalyeSayisi, masaDurumu, aciklama, katID);
-            else
-                dataGridView1.DataSource = vt.Listele();
-        }
-
-        // Boş Masaları Listele butonu
-        private void button5_Click(object sender, EventArgs e)
-        {
-            dataGridView1.DataSource = vt.Listele(true);
-            temizle();
         }
 
         // Hepsini Listele butonu
@@ -148,25 +104,91 @@ namespace RestoranModulu.Ekranlar.admin
             temizle();
         }
 
-        // Boşta Olan Masalar listesi içinde seçilen masa, verilen katID değerine sahip kata eklenir.
+        // Boş Masaları Listele butonu
+        private void button5_Click(object sender, EventArgs e)
+        {
+            dataGridView1.DataSource = vt.Listele(true);
+            temizle();
+        }
+
+        // Masaları Filtrele butonu
+        private void button6_Click(object sender, EventArgs e)
+        {
+            degerAtama();
+            DataTable filtrelenmisListe = vt.masaFiltrele(0, adi, sandalyeSayisi, masaDurumu, katID);
+            if (filtrelenmisListe.Rows.Count > 0)
+                dataGridView1.DataSource = filtrelenmisListe ?? vt.Listele();
+            else
+            {
+                MessageBox.Show("Girilen bilgilere göre bir masa bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                dataGridView1.DataSource = vt.Listele();
+            }
+        }
+
+        // Masaları Temizle butonu
+        private void button8_Click(object sender, EventArgs e)
+        {
+            if (katID > 0)
+            {
+                vt.masalariTemizle(katID);
+                dataGridView2.DataSource = vt.Listele(true);
+                dataGridView3.DataSource = vt.Listele(true, katID);
+            }
+        }
+
+        private void dataGridView1_CellClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+            int satirNo = e.RowIndex;
+            if (satirNo >= 0 && satirNo < (dataGridView1.Rows.Count - 1))
+            {
+                var satir = dataGridView1.Rows[satirNo];
+
+                try
+                {
+                    masaID = Convert.ToInt32(satir.Cells[0].Value);
+                    textBox1.Text = satir.Cells[1].Value?.ToString() ?? "";
+                    textBox2.Text = satir.Cells[2].Value?.ToString() ?? "";
+                    comboBox1.Text = satir.Cells[3].Value?.ToString() ?? "";
+                    if (panel3.Visible == true)
+                    {
+                        textBox3.Text = satir.Cells[4].Value?.ToString() ?? "";
+                        textBox4.Text = satir.Cells[5].Value?.ToString() ?? "";
+                    }
+                    else if (panel4.Visible == true)
+                    {
+                        textBox5.Text = satir.Cells[4].Value?.ToString() ?? "";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Satır verileri alınırken bir hata oluştu: " + ex.Message);
+                }
+            }
+        }
+
+        // Boşta olan masalar listesi içinden seçilen masa, kata eklenir.
         private void dataGridView2_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int satirNo = e.RowIndex;
-            if (satirNo >= 0)
+            if (satirNo >= 0 && satirNo < dataGridView2.Rows.Count)
             {
-                if (katID != 0)
-                {
-                    masaID = int.Parse(dataGridView2.Rows[satirNo].Cells[0].Value.ToString());
-                    adi = dataGridView2.Rows[satirNo].Cells[1].Value.ToString();
-                    sandalyeSayisi = int.Parse(dataGridView2.Rows[satirNo].Cells[2].Value.ToString());
-                    masaDurumu = dataGridView2.Rows[satirNo].Cells[3].Value.ToString();
-                    aciklama = dataGridView2.Rows[satirNo].Cells[4].Value.ToString();
+                var satir = dataGridView2.Rows[satirNo];
 
-                    if (vt.masaGuncelle(masaID, adi, sandalyeSayisi, masaDurumu, aciklama, katID))
-                    {
-                        dataGridView2.DataSource = vt.Listele(true);
-                        dataGridView3.DataSource = vt.Listele(true, katID);
-                    }
+                try
+                {
+                    masaID = Convert.ToInt32(satir.Cells[0].Value);
+                    adi = satir.Cells[1].Value?.ToString() ?? "";
+                    sandalyeSayisi = Convert.ToInt32(satir.Cells[2].Value);
+                    masaDurumu = satir.Cells[3].Value?.ToString() ?? "";
+                    aciklama = satir.Cells[4].Value?.ToString() ?? "";
+
+                    vt.masaGuncelle(masaID, adi, masaDurumu, aciklama, sandalyeSayisi, katID);
+                    dataGridView2.DataSource = vt.Listele(true);
+                    dataGridView3.DataSource = vt.Listele(true, katID);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Satır verileri alınırken bir hata oluştu: " + ex.Message);
                 }
             }
         }
@@ -175,82 +197,44 @@ namespace RestoranModulu.Ekranlar.admin
         private void dataGridView3_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int satirNo = e.RowIndex;
-            if (satirNo >= 0)
+            if (satirNo >= 0 && satirNo < dataGridView3.Rows.Count)
             {
-                masaID = int.Parse(dataGridView3.Rows[satirNo].Cells[0].Value.ToString());
-                adi = dataGridView3.Rows[satirNo].Cells[1].Value.ToString();
-                sandalyeSayisi = int.Parse(dataGridView3.Rows[satirNo].Cells[2].Value.ToString());
-                masaDurumu = dataGridView3.Rows[satirNo].Cells[3].Value.ToString();
-                aciklama = dataGridView3.Rows[satirNo].Cells[4].Value.ToString();
+                var satir = dataGridView3.Rows[satirNo];
 
-                if (vt.masaGuncelle(masaID, adi, sandalyeSayisi, masaDurumu, aciklama, 0))
+                try
                 {
+                    masaID = Convert.ToInt32(satir.Cells[0].Value);
+                    adi = satir.Cells[1].Value?.ToString() ?? "";
+                    sandalyeSayisi = Convert.ToInt32(satir.Cells[2].Value);
+                    masaDurumu = satir.Cells[3].Value?.ToString() ?? "";
+                    aciklama = satir.Cells[4].Value?.ToString() ?? "";
+
+                    vt.masaGuncelle(masaID, adi, masaDurumu, aciklama, sandalyeSayisi, 0);
                     dataGridView2.DataSource = vt.Listele(true);
                     dataGridView3.DataSource = vt.Listele(true, katID);
                 }
-            }
-
-        }
-
-        // Masaları Temizle butonu
-        private void button8_Click(object sender, EventArgs e)
-        {
-            if (katID > 0)
-            {
-                // Masayı kata ekleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.masalariTemizle(katID))
+                catch (Exception ex)
                 {
-                    dataGridView2.DataSource = vt.Listele(true);
-                    dataGridView3.DataSource = vt.Listele(true, katID);
+                    MessageBox.Show("Satır verileri alınırken bir hata oluştu: " + ex.Message);
                 }
             }
         }
 
-        // dataGridView listesinde bulunan bir satıra tıklanınca, o satır içinde bulunan bilgiler ile textBox ve comboBox'ları doldurur.
-        // Ayriyeten masa üstünde işlem yapmak için masaID değerini alır.
-        private void dataGridView1_CellClick_1(object sender, DataGridViewCellEventArgs e)
-        {
-            int satirNo = e.RowIndex;
-            if (satirNo >= 0)
-            {
-                masaID = int.Parse(dataGridView1.Rows[satirNo].Cells[0].Value.ToString());
-                textBox1.Text = dataGridView1.Rows[satirNo].Cells[1].Value.ToString();
-                textBox2.Text = dataGridView1.Rows[satirNo].Cells[2].Value.ToString();
-                comboBox1.Text = dataGridView1.Rows[satirNo].Cells[3].Value.ToString();
-                if (panel3.Visible == true)
-                {
-                    textBox3.Text = dataGridView1.Rows[satirNo].Cells[4].Value.ToString();
-                    textBox4.Text = dataGridView1.Rows[satirNo].Cells[5].Value.ToString();
-                }
-                else if (panel4.Visible == true)
-                {
-                    textBox5.Text = dataGridView1.Rows[satirNo].Cells[4].Value.ToString();
-                }
-            }
-        }
-
-        // Veri tablosunda NULL değer alamayan sütunlar için gerekli boşluk kontrolleri yapılır.
         public string boslukKontrolu()
         {
-            string mesaj;
+            string mesaj = null;
             List<string> hataMesajlari = new List<string>();
             if (string.IsNullOrEmpty(textBox1.Text))
                 hataMesajlari.Add("Ad bilgisi boş bırakılamaz");
             if (string.IsNullOrEmpty(textBox2.Text))
                 hataMesajlari.Add("Sandalye sayısı belirtilmeli");
             if (hataMesajlari.Count > 0)
-            {
                 mesaj = string.Join(Environment.NewLine, hataMesajlari);
-                return mesaj;
-            }
-
-            return null;
+            return mesaj;
         }
 
-        // Hem ekranda ki alanları temizler hem de kullanılan değişkenlerin değerlerini standart konuma getirir.
         public void temizle()
         {
-            // Ekranın temizlenmesi.
             textBox1.Text = null;
             textBox2.Text = null;
             textBox3.Text = null;
@@ -258,7 +242,6 @@ namespace RestoranModulu.Ekranlar.admin
             textBox5.Text = null;
             comboBox1.Text = null;
 
-            // Kullanıcı değişkenlerinin temizlenmesi.
             masaID = 0;
             katID = 0;
             sandalyeSayisi = 0;
@@ -267,7 +250,6 @@ namespace RestoranModulu.Ekranlar.admin
             aciklama = null;
         }
 
-        // Ürün değişkenlerine değer atama işlemleri
         public void degerAtama()
         {
             if (!string.IsNullOrEmpty(textBox1.Text))

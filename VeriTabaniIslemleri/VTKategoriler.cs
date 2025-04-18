@@ -1,122 +1,120 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Windows.Forms;
 
 public class VTKategoriler
 {
-    // Veri tabanı bağlantısı.
-    public string baglantiKodu = "Data Source=DESKTOP-HSH38D0;Initial Catalog=RestoranModulu;Integrated Security=True";
+    public string baglantiKodu = "Server=localhost; Database=restoranmodulu; Uid=root; Pwd=Malukat3691.;";
 
-    // Tablo üzerindeki verileri çeker ve Data Table olarak geri döndürür.
     public DataTable Listele()
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"SELECT * FROM Kategoriler";
-
-        SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-        try
+        DataTable dt = new DataTable();
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            baglanti.Open();
-            SqlDataAdapter da = new SqlDataAdapter(komut);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            baglanti.Close();
-            return dt;
-        }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-        return null;
-    }
-    public bool kategoriEkle(string adi, string aciklama = null)
-    {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"INSERT INTO Kategoriler(adi, aciklama)" +
-                                          $" VALUES('{adi}', '{aciklama}')";
-        try
-        {
-
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Kategori başarılı bir şekilde eklendi");
-            else
+            string sqlKomutu = "SELECT * FROM kategoriler";
+            try
             {
-                MessageBox.Show("Kategori eklenemedi.");
-                return false;
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                da.Fill(dt);
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
-        return true;
+        return dt;
     }
-
-    // "Kategoriler" tablosu içerisinde, ID değeri verilen kategorinin bilgilerini günceller.
-    public bool kategoriGuncelle(int kategoriID, string adi, string aciklama = null)
+    public void kategoriEkle(string adi, string aciklama)
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"UPDATE Kategoriler " +
-                           $"SET adi='{adi}', aciklama='{aciklama}' " +
-                           $"WHERE kategoriID='{kategoriID}'";
-        try
+        bool sonuc = false;
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Kategori bilgileri başarılı bir şekilde güncellendi");
-            else
+            string sqlKomutu = "INSERT INTO Kategoriler(adi, aciklama) VALUES(@adi, @aciklama)";
+            try
             {
-                MessageBox.Show("Kategori bilgileri güncellenemedi.");
-                return false;
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                komut.Parameters.AddWithValue("@adi", adi);
+                komut.Parameters.AddWithValue("@aciklama", aciklama);
+
+                sonuc = (komut.ExecuteNonQuery() == 1) ? true : false;
+                if (!sonuc)
+                    MessageBox.Show("Kullanıcı eklenemedi.");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
-        {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
-        }
-        return true;
     }
 
-    // "Kategoriler" tablosu içerisinde, ID değeri verilen kategorinin bilgilerini siler.
-    public bool kategoriSil(int kategoriID)
+    public void kategoriGuncelle(int kategoriID, string adi, string aciklama)
     {
-        SqlConnection baglanti = new SqlConnection(baglantiKodu);
-        string sqlKomutu = $"DELETE FROM Kategoriler WHERE kategoriID='{kategoriID}'";
-        try
+        bool sonuc = false;
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
+            List<string> setKisimlari = new List<string>();
+            MySqlCommand komut = new MySqlCommand();
 
-            baglanti.Open();
-            SqlCommand komut = new SqlCommand(sqlKomutu, baglanti);
-            int sonuc = komut.ExecuteNonQuery();
-            baglanti.Close();
-            if (sonuc == 1)
-                Console.Out.WriteLine("Kategori bilgileri başarılı bir şekilde silindi");
-            else
+            if (!string.IsNullOrEmpty(adi))
             {
-                MessageBox.Show("Kategori bilgileri silinemedi.");
-                return false;
+                setKisimlari.Add("adi = @adi");
+                komut.Parameters.AddWithValue("@adi", adi);
+            }
+
+            if (!string.IsNullOrEmpty(aciklama))
+            {
+                setKisimlari.Add("aciklama = @aciklama");
+                komut.Parameters.AddWithValue("@aciklama", aciklama);
+            }
+
+            if (setKisimlari.Count == 0)
+                MessageBox.Show("Güncellenecek herhangi bir alan belirtilmedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            string sqlKomutu = $"UPDATE kategoriler SET {string.Join(", ", setKisimlari)} WHERE kategoriID = @kategoriID";
+            komut.CommandText = sqlKomutu;
+            komut.Parameters.AddWithValue("@kategoriID", kategoriID);
+            komut.Connection = baglanti;
+
+            try
+            {
+                baglanti.Open();
+                sonuc = (komut.ExecuteNonQuery() == 1) ? true : false;
+                if (!sonuc)
+                    MessageBox.Show("Kategori bilgileri güncellenemedi.");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        catch (Exception hata)
+    }
+
+    public void kategoriSil(int kategoriID)
+    {
+        bool sonuc = false;
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            baglanti.Close();
-            MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return false;
+            string sqlKomutu = "DELETE FROM kategoriler WHERE kategoriID=@kategoriID";
+            try
+            {
+
+                baglanti.Open();
+                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
+                komut.Parameters.AddWithValue("@kategoriID", kategoriID);
+
+                sonuc = (komut.ExecuteNonQuery() == 1) ? true : false;
+                if (!sonuc)
+                    MessageBox.Show("Kategori bilgileri silinemedi.");
+            }
+            catch (Exception hata)
+            {
+                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-        return true;
     }
 }

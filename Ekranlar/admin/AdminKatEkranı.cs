@@ -7,8 +7,7 @@ namespace RestoranModulu.Ekranlar.admin
     {
         VTKatlar vt = new VTKatlar();
 
-        // Ürün bilgileri değişkenleri
-        int katID, masaSayisi = 0;
+        int katID = 0;
         string adi, durumu, aciklama = null;
 
         public AdminKatEkranı()
@@ -24,12 +23,9 @@ namespace RestoranModulu.Ekranlar.admin
             if (mesaj == null)
             {
                 degerAtama();
-                // Kat ekleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.katEkle(adi, durumu, aciklama))
-                {
-                    dataGridView1.DataSource = vt.Listele();
-                    temizle();
-                }
+                vt.katEkle(adi, durumu, aciklama);
+                dataGridView1.DataSource = vt.Listele();
+                temizle();
             }
             else
                 MessageBox.Show(mesaj, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -41,12 +37,9 @@ namespace RestoranModulu.Ekranlar.admin
             if (katID > 0)
             {
                 degerAtama();
-                // Kat güncelleme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.katGuncelle(katID, adi, durumu, aciklama))
-                {
-                    dataGridView1.DataSource = vt.Listele();
-                    temizle();
-                }
+                vt.katGuncelle(katID, adi, durumu, aciklama);
+                dataGridView1.DataSource = vt.Listele();
+                temizle();
             }
             else
                 MessageBox.Show("Katlar listesi içinden bir kat şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -58,12 +51,24 @@ namespace RestoranModulu.Ekranlar.admin
             if (katID > 0)
             {
                 degerAtama();
-                // Kat silme işlemi başarılı olursa true döndürür, başarısız olursa hata verir ve false döndürür.
-                if (vt.katSil(katID))
-                {
-                    dataGridView1.DataSource = vt.Listele();
-                    temizle();
-                }
+                vt.katSil(katID);
+                dataGridView1.DataSource = vt.Listele();
+                temizle();
+            }
+            else
+                MessageBox.Show("Katlar listesi içinden bir kat şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        // Masa Ekle butonu
+        private void button4_Click(object sender, EventArgs e)
+        {
+            if (katID > 0)
+            {
+                AdminMasaEkranı form = new AdminMasaEkranı(katID);
+                this.SuspendLayout();
+                form.ShowDialog();
+                dataGridView1.DataSource = vt.Listele();
+                temizle();
             }
             else
                 MessageBox.Show("Katlar listesi içinden bir kat şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -76,63 +81,33 @@ namespace RestoranModulu.Ekranlar.admin
             temizle();
         }
 
-        // dataGridView listesinde bulunan bir satıra tıklanınca, o satır içinde bulunan bilgiler ile textBox ve comboBox'ları doldurur.
-        // Ayriyeten kullanıcı üstünde işlem yapmak için katID değerini alır.
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             int satirNo = e.RowIndex;
-            if (satirNo >= 0 && satirNo < (dataGridView1.Rows.Count - 1))
+            if (satirNo >= 0 && satirNo < dataGridView1.Rows.Count)
             {
-                katID = int.Parse(dataGridView1.Rows[satirNo].Cells[0].Value.ToString());
-                textBox1.Text = dataGridView1.Rows[satirNo].Cells[1].Value.ToString();
-                comboBox1.Text = dataGridView1.Rows[satirNo].Cells[2].Value.ToString();
-                textBox3.Text = dataGridView1.Rows[satirNo].Cells[3].Value.ToString();
-                if (!(vt.masaSayisi(katID) == int.Parse("-1")))
-                    textBox2.Text = vt.masaSayisi(katID).ToString();
+                var satir = dataGridView1.Rows[satirNo];
+
+                try
+                {
+                    katID = Convert.ToInt32(satir.Cells[0].Value);
+                    textBox1.Text = satir.Cells[1].Value.ToString() ?? "";
+                    comboBox1.Text = satir.Cells[2].Value.ToString() ?? "";
+                    textBox3.Text = satir.Cells[3].Value.ToString() ?? "";
+                    textBox2.Text = (vt.masaSayisi(katID) != 0) ? vt.masaSayisi(katID).ToString() : 0.ToString();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Satır verileri alınırken bir hata oluştu: " + ex.Message);
+                }
             }
         }
 
-        // Masa Ekle butonu
-        private void button4_Click(object sender, EventArgs e)
-        {
-            if (katID > 0)
-            {
-                AdminMasaEkranı form = new AdminMasaEkranı("AdminKatEkranı", katID);
-                this.SuspendLayout();
-                form.ShowDialog();
-                dataGridView1.DataSource = vt.Listele();
-                temizle();
-            }
-            else
-                MessageBox.Show("Katlar listesi içinden bir kat şeçilmeli.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
-        // Hem ekranda ki alanları temizler hem de kullanılan değişkenlerin değerlerini standart konuma getirir.
-        public void temizle()
-        {
-            // Ekranın temizlenmesi.
-            textBox1.Text = null;
-            textBox2.Text = null;
-            textBox3.Text = null;
-            comboBox1.Text = null;
-
-            // Kullanıcı değişkenlerinin temizlenmesi.
-            katID = 0;
-            masaSayisi = 0;
-            adi = null;
-            durumu = null;
-            aciklama = null;
-        }
-
-        // Kullanıcı değişkenlerine değer atama işlemleri
         public void degerAtama()
         {
             if (!string.IsNullOrEmpty(textBox1.Text))
                 adi = textBox1.Text;
             else adi = null;
-            if (!string.IsNullOrEmpty(textBox2.Text))
-                masaSayisi = int.Parse(textBox2.Text);
-            else masaSayisi = 0;
             if (!string.IsNullOrEmpty(comboBox1.Text))
                 durumu = comboBox1.Text;
             else durumu = null;
@@ -141,7 +116,6 @@ namespace RestoranModulu.Ekranlar.admin
             else aciklama = null;
         }
 
-        // Veri tablosunda NULL değer alamayan sütunlar için gerekli boşluk kontrolleri yapılır.
         public string boslukKontrolu()
         {
             string mesaj = null;
@@ -150,5 +124,18 @@ namespace RestoranModulu.Ekranlar.admin
             return mesaj;
         }
 
+        public void temizle()
+        {
+            textBox1.Text = null;
+            textBox2.Text = null;
+            textBox3.Text = null;
+            comboBox1.Text = null;
+
+            katID = 0;
+            adi = null;
+            durumu = null;
+            aciklama = null;
+        }
     }
 }
+

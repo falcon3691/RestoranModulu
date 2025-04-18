@@ -137,13 +137,6 @@
             this.menüToolStripMenuItem.Text = "Menü";
             this.menüToolStripMenuItem.Click += new System.EventHandler(this.menüToolStripMenuItem_Click);
             // 
-            // mutfakToolStripMenuItem
-            // 
-            this.mutfakToolStripMenuItem.Name = "mutfakToolStripMenuItem";
-            this.mutfakToolStripMenuItem.Size = new System.Drawing.Size(88, 32);
-            this.mutfakToolStripMenuItem.Text = "Mutfak";
-            this.mutfakToolStripMenuItem.Click += new System.EventHandler(this.mutfakToolStripMenuItem_Click);
-            // 
             // geriDönToolStripMenuItem
             // 
             this.geriDönToolStripMenuItem.Name = "geriDönToolStripMenuItem";
