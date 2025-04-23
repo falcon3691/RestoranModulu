@@ -38,7 +38,7 @@ namespace RestoranModulu.Ekranlar.Kasa
 
             foreach (DataRow siparis in vtSiparis.Listele2(masaID).Rows)
             {
-                vtSiparis.siparisGuncelle(Convert.ToInt32(siparis["siparisID"]), toplamTutar, "ödendi");
+                vtSiparis.siparisGuncelle(Convert.ToInt32(siparis["siparisID"]), toplamTutar, "ödendi", null);
             }
             this.Close();
         }
@@ -74,13 +74,6 @@ namespace RestoranModulu.Ekranlar.Kasa
                 foreach (siparisDetaylari siparisDetay in silinecekler)
                     secilenDetayID.Remove(siparisDetay);
             }
-            /*
-            DataTable dt = new DataTable();
-            foreach (DataRow siparis in vtSiparis.Listele2(masaID).Rows)
-            {
-                dt.Merge(vtSiparis.detayListele(Convert.ToInt32(siparis[0]), true));
-            }
-            dataGridView1.DataSource = dt;*/
             urunleriListele(masaID);
 
             foreach (siparisDetaylari siparisDetay in secilenDetayID)
@@ -107,7 +100,7 @@ namespace RestoranModulu.Ekranlar.Kasa
                 var detaylar = vtSiparis.detayListele(Convert.ToInt32(siparis["siparisID"]), true);
                 if (detaylar.Rows.Count == 0)
                 {
-                    vtSiparis.siparisGuncelle(Convert.ToInt32(siparis["siparisID"]), Convert.ToInt32(siparis["toplamFiyat"]), "ödendi");
+                    vtSiparis.siparisGuncelle(Convert.ToInt32(siparis["siparisID"]), Convert.ToInt32(siparis["toplamFiyat"]), "ödendi", null);
                 }
             }
 

@@ -129,12 +129,12 @@ public class VTSiparisler
         return dt;
     }
 
-    public void siparisDetayEkle(int siparisID, int urunID, int miktar, int birimFiyat, int toplamFiyat, string durumu, string urunAdi)
+    public void siparisDetayEkle(int siparisID, int urunID, int miktar, int birimFiyat, int toplamFiyat, string durumu, string urunAdi, string detayNot)
     {
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "INSERT INTO siparisdetay(siparisID, urunID, miktar, birimFiyat, toplamFiyat, durumu, urunAdi) " +
-                                               "VALUES(@siparisID, @urunID, @miktar, @birimFiyat, @toplamFiyat, @durumu, @urunAdi)";
+            string sqlKomutu = "INSERT INTO siparisdetay(siparisID, urunID, miktar, birimFiyat, toplamFiyat, durumu, urunAdi, detayNot) " +
+                                               "VALUES(@siparisID, @urunID, @miktar, @birimFiyat, @toplamFiyat, @durumu, @urunAdi, @detayNot)";
             try
             {
                 baglanti.Open();
@@ -146,6 +146,7 @@ public class VTSiparisler
                 komut.Parameters.AddWithValue("@toplamFiyat", toplamFiyat);
                 komut.Parameters.AddWithValue("@durumu", durumu);
                 komut.Parameters.AddWithValue("@urunAdi", urunAdi);
+                komut.Parameters.AddWithValue("@detayNot", detayNot);
 
                 bool sonuc = komut.ExecuteNonQuery() == 1;
                 if (!sonuc)
@@ -230,22 +231,43 @@ public class VTSiparisler
         }
     }
 
-    public void siparisGuncelle(int siparisID, int toplamFiyat, string durumu)
+    public void siparisGuncelle(int siparisID, int toplamFiyat, string durumu, string siparisNot)
     {
         string tarih = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "UPDATE siparisler " +
-                               "SET toplamFiyat=@toplamFiyat, durumu=@durumu, olusturmaTarihi=@tarih " +
-                               "WHERE siparisID=@siparisID";
+            List<string> setKisimlari = new List<string>();
+            MySqlCommand komut = new MySqlCommand();
+
+            if (toplamFiyat != 0)
+            {
+                setKisimlari.Add("toplamFiyat = @toplamFiyat");
+                komut.Parameters.AddWithValue("@toplamFiyat", toplamFiyat);
+            }
+
+            if (!string.IsNullOrEmpty(durumu))
+            {
+                setKisimlari.Add("durumu = @durumu");
+                komut.Parameters.AddWithValue("@durumu", durumu);
+            }
+
+            if (!string.IsNullOrEmpty(siparisNot))
+            {
+                setKisimlari.Add("siparisNot = @siparisNot");
+                komut.Parameters.AddWithValue("@siparisNot", siparisNot);
+            }
+            if (setKisimlari.Count == 0)
+                MessageBox.Show("Güncellenecek herhangi bir alan belirtilmedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            string sqlKomutu = $"UPDATE siparisler SET {string.Join(", ", setKisimlari)}, olusturmaTarihi=@tarih WHERE siparisID = @siparisID";
+            komut.CommandText = sqlKomutu;
+            komut.Parameters.AddWithValue("@siparisID", siparisID);
+            komut.Parameters.AddWithValue("@tarih", tarih);
+            komut.Connection = baglanti;
+
             try
             {
                 baglanti.Open();
-                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
-                komut.Parameters.AddWithValue("@toplamFiyat", toplamFiyat);
-                komut.Parameters.AddWithValue("@durumu", durumu);
-                komut.Parameters.AddWithValue("@tarih", tarih);
-                komut.Parameters.AddWithValue("@siparisID", siparisID);
 
                 bool sonuc = komut.ExecuteNonQuery() == 1;
                 if (!sonuc)
