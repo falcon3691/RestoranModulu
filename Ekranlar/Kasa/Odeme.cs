@@ -54,8 +54,6 @@ namespace RestoranModulu.Ekranlar.Kasa
 
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
-                if (row.IsNewRow) continue;
-
                 int satirID = Convert.ToInt32(row.Cells["siparisDetayID"].Value);
                 int miktar = Convert.ToInt32(row.Cells["miktar"].Value);
 
@@ -76,13 +74,14 @@ namespace RestoranModulu.Ekranlar.Kasa
                 foreach (siparisDetaylari siparisDetay in silinecekler)
                     secilenDetayID.Remove(siparisDetay);
             }
-
+            /*
             DataTable dt = new DataTable();
             foreach (DataRow siparis in vtSiparis.Listele2(masaID).Rows)
             {
                 dt.Merge(vtSiparis.detayListele(Convert.ToInt32(siparis[0]), true));
             }
-            dataGridView1.DataSource = dt;
+            dataGridView1.DataSource = dt;*/
+            urunleriListele(masaID);
 
             foreach (siparisDetaylari siparisDetay in secilenDetayID)
             {
