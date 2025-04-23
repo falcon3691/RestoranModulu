@@ -86,7 +86,7 @@ namespace RestoranModulu.Ekranlar.garson
             {
                 Width = 120,
                 Height = 120,
-                Text = $"{masa.MasaAdi}\nSandalyeler: {masa.SandalyeSayisi}",
+                Text = $"{masa.MasaAdi}\nSandalyeler: {masa.SandalyeSayisi}" + ((masa.grupID != 0) ? $"\nGrubu: {masa.grupID}" : ""),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Font = new Font("Arial", 12, FontStyle.Bold),
                 BackColor = masa.Durumu == "dolu" ? Color.Red : masa.Durumu == "boş" ? Color.LightGreen : masa.Durumu == "rezerve" ? Color.Yellow : Color.Gray,
@@ -117,11 +117,13 @@ namespace RestoranModulu.Ekranlar.garson
                 MasaDetay detayForm = new MasaDetay(masa.MasaID, kullaniciID, rolID);
                 this.SuspendLayout();
                 detayForm.ShowDialog();
+                LoadKatsAndMasas();
             }
         }
 
         public void LoadKatsAndMasas()
         {
+            flowLayoutPanel1.Controls.Clear();
             DataTable katlar = vtKat.Listele();
             for (int i = 0; i < katlar.Rows.Count; i++)
             {
@@ -148,7 +150,8 @@ namespace RestoranModulu.Ekranlar.garson
                         Convert.ToInt32(masaSatir["sandalyeSayisi"]),
                         Convert.ToInt32(masaSatir["katID"]),
                         masaSatir["masaDurumu"].ToString() ?? "",
-                        masaSatir["aciklama"].ToString() ?? ""
+                        masaSatir["aciklama"].ToString() ?? "",
+                        (!string.IsNullOrEmpty(masaSatir["grupID"].ToString())) ? Convert.ToInt32(masaSatir["grupID"]) : 0
                     );
 
                     Button masaButton = CreateMasaButton(masa);
@@ -192,7 +195,9 @@ namespace RestoranModulu.Ekranlar.garson
 
         public string Aciklama { get; }
 
-        public Masa(int masaID, string masaAdi, int sandalyeSayisi, int katID, string durumu, string aciklama)
+        public int grupID { get; }
+
+        public Masa(int masaID, string masaAdi, int sandalyeSayisi, int katID, string durumu, string aciklama, int grupID)
         {
             this.MasaID = masaID;
             this.MasaAdi = masaAdi;
@@ -200,6 +205,8 @@ namespace RestoranModulu.Ekranlar.garson
             this.KatID = katID;
             this.Durumu = durumu;
             this.Aciklama = aciklama;
+            if (grupID != 0)
+                this.grupID = grupID;
         }
     }
 }

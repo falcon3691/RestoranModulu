@@ -398,16 +398,92 @@ public class VTMasa
                 {
                     komut.Parameters.Clear();
                     komut.Parameters.AddWithValue("@masaID", masaID);
+                    int grupIDDegeri = grupDegeriniBul(masaID);
                     bool sonuc = komut.ExecuteNonQuery() == 1;
                     if (sonuc)
                         masaGuncelle(masaID, null, null, null, 0, 0, null);
                     else
                         MessageBox.Show("Masa gruptan çıkartılamadı.", "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    if (grupIDDegeri != 0)
+                    {
+                        sqlKomutu = "SELECT COUNT(PKsutunu) FROM masagrup WHERE grupID=@grupID";
+                        komut.CommandText = sqlKomutu;
+                        komut.Parameters.Clear();
+                        komut.Parameters.AddWithValue("@grupID", grupIDDegeri);
+                        int deger = Convert.ToInt32(komut.ExecuteScalar());
+                        if (deger == 1)
+                        {
+                            grubuSil(grupIDDegeri);
+                        }
+                    }
                 }
             }
             catch (Exception hata)
             {
                 MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+    }
+
+    public int grupDegeriniBul(int masaID)
+    {
+        int grupIDDegeri = 0;
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
+        {
+            string sqlKomutu = "SELECT grupID FROM masalar WHERE masaID=@masaID";
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
+            {
+                try
+                {
+                    baglanti.Open();
+                    komut.Parameters.Clear();
+                    komut.Parameters.AddWithValue("@masaID", masaID);
+                    bool sonuc = int.TryParse(komut.ExecuteScalar().ToString(), out grupIDDegeri);
+                    if (!sonuc)
+                        grupIDDegeri = 0;
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+        return grupIDDegeri;
+    }
+
+    public void grubuSil(int grupID)
+    {
+
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
+        {
+            string sqlKomutu = "DELETE FROM masagrup WHERE grupID=@grupID";
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
+            {
+                try
+                {
+                    baglanti.Open();
+                    komut.Parameters.Clear();
+                    komut.Parameters.AddWithValue("@grupID", grupID);
+                    bool sonuc = komut.ExecuteNonQuery() == 1;
+                    if (sonuc)
+                    {
+                        sqlKomutu = "SELECT masaID FROM masalar WHERE grupID=@grupID";
+                        komut.CommandText = sqlKomutu;
+                        komut.Parameters.Clear();
+                        komut.Parameters.AddWithValue("@grupID", grupID);
+
+                        sonuc = int.TryParse(komut.ExecuteScalar().ToString(), out int masaID);
+                        if (sonuc)
+                            masaGuncelle(masaID, null, null, null, 0, 0, null);
+                    }
+                    else
+                        MessageBox.Show("Tek masası kalan grup silinemedi.", "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
     }
