@@ -289,21 +289,20 @@ public class VTMasa
             string sqlKomutu = "SELECT masaID, adi " +
                                "FROM masalar " +
                                "WHERE grupID = (SELECT grupID FROM masalar WHERE masaID = @masaID) AND masaID != @masaID";
-
-            try
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
             {
-                baglanti.Open();
-                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
                 komut.Parameters.Clear();
                 komut.Parameters.AddWithValue("@masaID", masaID);
-
-                MySqlDataAdapter da = new MySqlDataAdapter(komut);
-                da.Fill(dt);
-                komut.Dispose();
-            }
-            catch (Exception hata)
-            {
-                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    baglanti.Open();
+                    MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                    da.Fill(dt);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
         return dt;
@@ -522,5 +521,30 @@ public class VTMasa
                 MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+    }
+
+    public DataTable grubuListele(int grupID)
+    {
+        DataTable dt = new DataTable();
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
+        {
+            string sqlKomutu = "SELECT masaID FROM masagrup WHERE grupID=@grupID";
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
+            {
+                komut.Parameters.Clear();
+                komut.Parameters.AddWithValue("@grupID", grupID);
+                try
+                {
+                    baglanti.Open();
+                    MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                    da.Fill(dt);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+        return dt;
     }
 }

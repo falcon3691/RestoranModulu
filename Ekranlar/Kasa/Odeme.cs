@@ -16,7 +16,6 @@ namespace RestoranModulu.Ekranlar.Kasa
         int masaID, kullaniciID = 0;
 
         int secilenTutar, kalanTutar, toplamTutar, odenenTutar, paraUstu = 0;
-        bool hepsiOdendiMi = false;
         List<siparisDetaylari> secilenDetayID = new List<siparisDetaylari>();
 
         public Odeme(int masaID)
@@ -205,9 +204,24 @@ namespace RestoranModulu.Ekranlar.Kasa
         {
             int toplamTutar = 0;
             DataTable dt2 = new DataTable();
-            foreach (DataRow siparis in vtSiparis.Listele2(masaID).Rows)
+            int grupIDDegeri = vtMasa.grupDegeriniBul(masaID);
+            if (grupIDDegeri > 0)
             {
-                dt2.Merge(vtSiparis.detayListele(Convert.ToInt32(siparis[0]), true));
+                foreach (DataRow masa in vtMasa.grubuListele(grupIDDegeri).Rows)
+                {
+                    int masaIDDegeri = Convert.ToInt32(masa["masaID"]);
+                    foreach (DataRow siparis in vtSiparis.Listele2(masaIDDegeri).Rows)
+                    {
+                        dt2.Merge(vtSiparis.detayListele(Convert.ToInt32(siparis[0]), true));
+                    }
+                }
+            }
+            else
+            {
+                foreach (DataRow siparis in vtSiparis.Listele2(masaID).Rows)
+                {
+                    dt2.Merge(vtSiparis.detayListele(Convert.ToInt32(siparis[0]), true));
+                }
             }
 
             dataGridView1.DataSource = dt2;
