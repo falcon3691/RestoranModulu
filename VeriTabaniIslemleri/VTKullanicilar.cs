@@ -15,17 +15,44 @@ public class VTKullanicilar
         DataTable dt = new DataTable();
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "SELECT * FROM kullanicilar";
-            try
+            string sqlKomutu = "SELECT kullanicilar.kullaniciID, kullanicilar.adiSoyadi, kullanicilar.telefon, kullanicilar.eMail, kullanicilar.kullaniciAdi, kullanicilar.parola, " +
+                               "kullanicilar.durumu, kullanicilar.aciklama, roller.adi AS RolAdi FROM kullanicilar " +
+                               "JOIN roller ON kullanicilar.rolID=roller.rolID";
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
             {
-                baglanti.Open();
-                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
-                MySqlDataAdapter da = new MySqlDataAdapter(komut);
-                da.Fill(dt);
+                try
+                {
+                    baglanti.Open();
+                    MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                    da.Fill(dt);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            catch (Exception hata)
+        }
+        return dt;
+    }
+
+    public DataTable Listele2()
+    {
+        DataTable dt = new DataTable();
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
+        {
+            string sqlKomutu = "SELECT kullaniciID, adiSoyadi FROM kullanicilar";
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
             {
-                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    baglanti.Open();
+                    MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                    da.Fill(dt);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
         return dt;
@@ -230,5 +257,28 @@ public class VTKullanicilar
                 sb.Append(b.ToString("x2"));
             return sb.ToString();
         }
+    }
+
+    public DataTable rolListele()
+    {
+        DataTable dt = new DataTable();
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
+        {
+            string sqlKomutu = "SELECT rolID, adi FROM roller";
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
+            {
+                try
+                {
+                    baglanti.Open();
+                    MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                    da.Fill(dt);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.Message, "UYARI", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
+        return dt;
     }
 }

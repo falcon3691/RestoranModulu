@@ -14,6 +14,18 @@ namespace RestoranModulu.Ekranlar.admin
         public AdminKullaniciEkranı()
         {
             InitializeComponent();
+
+            DataTable dt = vt.rolListele();
+
+            DataRow yeniSatir = dt.NewRow();
+            yeniSatir["rolID"] = 0;
+            yeniSatir["adi"] = "Bir rol seçin";
+            dt.Rows.InsertAt(yeniSatir, 0);
+
+            comboBox1.DataSource = dt;
+            comboBox1.DisplayMember = "adi";
+            comboBox1.ValueMember = "rolID";
+
             dataGridView1.DataSource = vt.Listele();
         }
 
@@ -98,9 +110,9 @@ namespace RestoranModulu.Ekranlar.admin
                     textBox3.Text = satir.Cells[3].Value?.ToString() ?? "";
                     textBox4.Text = satir.Cells[4].Value?.ToString() ?? "";
                     textBox5.Text = satir.Cells[5].Value?.ToString() ?? "";
-                    comboBox1.Text = satir.Cells[6].Value?.ToString() ?? "";
-                    comboBox2.Text = satir.Cells[7].Value?.ToString() ?? "";
-                    textBox6.Text = satir.Cells[8].Value?.ToString() ?? "";
+                    textBox7.Text = satir.Cells[6].Value?.ToString() ?? "";
+                    textBox6.Text = satir.Cells[7].Value?.ToString() ?? "";
+                    comboBox1.Text = satir.Cells[8].Value?.ToString() ?? "";
                 }
                 catch (Exception ex)
                 {
@@ -117,8 +129,8 @@ namespace RestoranModulu.Ekranlar.admin
             textBox4.Text = null;
             textBox5.Text = null;
             textBox6.Text = null;
-            comboBox1.Text = null;
-            comboBox2.Text = null;
+            textBox7.Text = null;
+            comboBox1.SelectedIndex = 0;
 
             kullaniciID = 0;
             rolID = 0;
@@ -151,11 +163,11 @@ namespace RestoranModulu.Ekranlar.admin
             if (!string.IsNullOrEmpty(textBox6.Text))
                 aciklama = textBox6.Text;
             else aciklama = null;
-            if (!string.IsNullOrEmpty(comboBox1.Text))
-                rolID = int.Parse(comboBox1.Text);
+            if (Convert.ToInt32(comboBox1.SelectedValue) != 0)
+                rolID = Convert.ToInt32(comboBox1.SelectedValue);
             else rolID = 0;
-            if (!string.IsNullOrEmpty(comboBox2.Text))
-                durumu = comboBox2.Text;
+            if (!string.IsNullOrEmpty(textBox7.Text))
+                durumu = textBox7.Text;
             else durumu = null;
         }
 
@@ -169,7 +181,7 @@ namespace RestoranModulu.Ekranlar.admin
                 hataMesajlari.Add("Kullanıcı adı bilgisi boş bırakılamaz");
             if (string.IsNullOrEmpty(textBox5.Text))
                 hataMesajlari.Add("Parola bilgisi boş bırakılamaz");
-            if (string.IsNullOrEmpty(comboBox1.Text))
+            if (Convert.ToInt32(comboBox1.SelectedValue) == 0)
                 hataMesajlari.Add("Rol bilgisi boş bırakılamaz");
             if (hataMesajlari.Count > 0)
             {

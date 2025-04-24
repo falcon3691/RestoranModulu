@@ -36,7 +36,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
@@ -56,6 +55,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.textBox6 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
@@ -151,15 +151,6 @@
             this.dataGridView1.Size = new System.Drawing.Size(997, 308);
             this.dataGridView1.TabIndex = 19;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick_1);
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(220, 57);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(236, 33);
-            this.comboBox1.TabIndex = 18;
             // 
             // textBox1
             // 
@@ -364,23 +355,31 @@
             this.panel1.Size = new System.Drawing.Size(223, 127);
             this.panel1.TabIndex = 38;
             // 
+            // textBox6
+            // 
+            this.textBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.textBox6.Location = new System.Drawing.Point(220, 61);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.Size = new System.Drawing.Size(236, 30);
+            this.textBox6.TabIndex = 39;
+            // 
             // AdminMasaEkranı
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1027, 669);
-            this.Controls.Add(this.panel3);
+            this.Controls.Add(this.textBox6);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.panel6);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel5);
+            this.Controls.Add(this.panel3);
+            this.Controls.Add(this.panel6);
             this.Name = "AdminMasaEkranı";
             this.Text = "AdminMasaEkranı";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
@@ -409,7 +408,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
@@ -429,5 +427,6 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.TextBox textBox6;
     }
 }

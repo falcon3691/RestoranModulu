@@ -92,7 +92,7 @@ namespace RestoranModulu.Ekranlar.admin
                 {
                     katID = Convert.ToInt32(satir.Cells[0].Value);
                     textBox1.Text = satir.Cells[1].Value.ToString() ?? "";
-                    comboBox1.Text = satir.Cells[2].Value.ToString() ?? "";
+                    textBox4.Text = satir.Cells[2].Value.ToString() ?? "";
                     textBox3.Text = satir.Cells[3].Value.ToString() ?? "";
                     textBox2.Text = (vt.masaSayisi(katID) != 0) ? vt.masaSayisi(katID).ToString() : 0.ToString();
                 }
@@ -108,8 +108,8 @@ namespace RestoranModulu.Ekranlar.admin
             if (!string.IsNullOrEmpty(textBox1.Text))
                 adi = textBox1.Text;
             else adi = null;
-            if (!string.IsNullOrEmpty(comboBox1.Text))
-                durumu = comboBox1.Text;
+            if (!string.IsNullOrEmpty(textBox4.Text))
+                durumu = textBox4.Text;
             else durumu = null;
             if (!string.IsNullOrEmpty(textBox3.Text))
                 aciklama = textBox3.Text;
@@ -129,7 +129,7 @@ namespace RestoranModulu.Ekranlar.admin
             textBox1.Text = null;
             textBox2.Text = null;
             textBox3.Text = null;
-            comboBox1.Text = null;
+            textBox4.Text = null;
 
             katID = 0;
             adi = null;

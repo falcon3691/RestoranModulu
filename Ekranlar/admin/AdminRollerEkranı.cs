@@ -71,7 +71,7 @@ namespace RestoranModulu.Ekranlar.admin
                     rolID = Convert.ToInt32(satir.Cells[0].Value);
                     textBox1.Text = satir.Cells[1].Value?.ToString() ?? "";
                     textBox2.Text = satir.Cells[2].Value?.ToString() ?? "";
-                    comboBox1.Text = satir.Cells[3].Value?.ToString() ?? "";
+                    textBox3.Text = satir.Cells[3].Value?.ToString() ?? "";
                 }
                 catch (Exception ex)
                 {
@@ -91,7 +91,7 @@ namespace RestoranModulu.Ekranlar.admin
         public void temizle()
         {
             textBox1.Text = null;
-            comboBox1.Text = null;
+            textBox3.Text = null;
             textBox2.Text = null;
 
             rolID = 0;
@@ -108,8 +108,8 @@ namespace RestoranModulu.Ekranlar.admin
             if (!string.IsNullOrEmpty(textBox2.Text))
                 aciklama = textBox2.Text;
             else aciklama = null;
-            if (!string.IsNullOrEmpty(comboBox1.Text))
-                durumu = comboBox1.Text;
+            if (!string.IsNullOrEmpty(textBox3.Text))
+                durumu = textBox3.Text;
             else durumu = null;
         }
     }

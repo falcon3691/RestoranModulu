@@ -7,6 +7,8 @@ namespace RestoranModulu.Ekranlar.admin
     public partial class AdminSiparislerEkranı : Form
     {
         VTSiparisler vt = new VTSiparisler();
+        VTMasa vtMasa = new VTMasa();
+        VTKullanicilar vtKullanicilar = new VTKullanicilar();
 
         int masaID, kullaniciID = 0;
         DateTime ilkTarih, sonTarih;
@@ -14,6 +16,30 @@ namespace RestoranModulu.Ekranlar.admin
         public AdminSiparislerEkranı()
         {
             InitializeComponent();
+
+            // Masaları listeleme
+            DataTable dtMasa = vtMasa.Listele2();
+            DataRow yeniSatir = dtMasa.NewRow();
+            yeniSatir["masaID"] = 0;
+            yeniSatir["adi"] = "Bir masa seçin";
+            dtMasa.Rows.InsertAt(yeniSatir, 0);
+
+            comboBox1.DataSource = dtMasa;
+            comboBox1.DisplayMember = "adi";
+            comboBox1.ValueMember = "masaID";
+
+            // Kullanıcıları listeleme
+            DataTable dtKullanici = vtKullanicilar.Listele2();
+            yeniSatir = dtKullanici.NewRow();
+            yeniSatir["kullaniciID"] = 0;
+            yeniSatir["adiSoyadi"] = "Bir kullanıcı seçin";
+            dtKullanici.Rows.InsertAt(yeniSatir, 0);
+
+            comboBox2.DataSource = dtKullanici;
+            comboBox2.DisplayMember = "adiSoyadi";
+            comboBox2.ValueMember = "kullaniciID";
+
+
             dataGridView1.DataSource = vt.tumSiparisleriListele();
         }
 
@@ -65,11 +91,11 @@ namespace RestoranModulu.Ekranlar.admin
 
         public void degerAtama()
         {
-            if (!string.IsNullOrEmpty(comboBox1.Text))
-                masaID = int.Parse(comboBox1.Text);
+            if (Convert.ToInt32(comboBox1.SelectedValue) != 0)
+                masaID = Convert.ToInt32(comboBox1.SelectedValue);
             else masaID = 0;
-            if (!string.IsNullOrEmpty(comboBox2.Text))
-                kullaniciID = int.Parse(comboBox2.Text);
+            if (Convert.ToInt32(comboBox2.SelectedValue) != 0)
+                kullaniciID = Convert.ToInt32(comboBox2.SelectedValue);
             else kullaniciID = 0;
             if (checkBox1.Checked)
                 sonTarih = dateTimePicker2.Value;

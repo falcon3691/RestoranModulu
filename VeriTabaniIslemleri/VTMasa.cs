@@ -41,23 +41,24 @@ public class VTMasa
         return dt;
     }
 
-    public DataTable Listele2(int masaID)
+    public DataTable Listele2()
     {
         DataTable dt = new DataTable();
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "SELECT * FROM Masalar WHERE masaID=@masaID";
-            MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
-            komut.Parameters.AddWithValue("@masaID", masaID);
-            try
+            string sqlKomutu = "SELECT masaID, adi FROM Masalar";
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
             {
-                baglanti.Open();
-                MySqlDataAdapter da = new MySqlDataAdapter(komut);
-                da.Fill(dt);
-            }
-            catch (Exception hata)
-            {
-                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    baglanti.Open();
+                    MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                    da.Fill(dt);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
         return dt;

@@ -148,7 +148,7 @@ namespace RestoranModulu.Ekranlar.admin
                     masaID = Convert.ToInt32(satir.Cells[0].Value);
                     textBox1.Text = satir.Cells[1].Value?.ToString() ?? "";
                     textBox2.Text = satir.Cells[2].Value?.ToString() ?? "";
-                    comboBox1.Text = satir.Cells[3].Value?.ToString() ?? "";
+                    textBox6.Text = satir.Cells[3].Value?.ToString() ?? "";
                     if (panel3.Visible == true)
                     {
                         textBox3.Text = satir.Cells[4].Value?.ToString() ?? "";
@@ -240,7 +240,7 @@ namespace RestoranModulu.Ekranlar.admin
             textBox3.Text = null;
             textBox4.Text = null;
             textBox5.Text = null;
-            comboBox1.Text = null;
+            textBox6.Text = null;
 
             masaID = 0;
             katID = 0;
@@ -255,8 +255,8 @@ namespace RestoranModulu.Ekranlar.admin
             if (!string.IsNullOrEmpty(textBox1.Text))
                 adi = textBox1.Text;
             else adi = null;
-            if (!string.IsNullOrEmpty(comboBox1.Text))
-                masaDurumu = comboBox1.Text;
+            if (!string.IsNullOrEmpty(textBox6.Text))
+                masaDurumu = textBox6.Text;
             else masaDurumu = null;
             if (!string.IsNullOrEmpty(textBox2.Text))
                 sandalyeSayisi = int.Parse(textBox2.Text);

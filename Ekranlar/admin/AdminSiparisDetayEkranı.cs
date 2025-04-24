@@ -36,11 +36,11 @@ namespace RestoranModulu.Ekranlar.admin
             }
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, System.EventArgs e)
+        private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(comboBox1.Text))
+            if (!string.IsNullOrEmpty(textBox2.Text))
             {
-                DataTable filtrelenmisListe = vtSiparis.detayFiltrele2(Convert.ToInt32(comboBox1.Text), siparisID);
+                DataTable filtrelenmisListe = vtSiparis.detayFiltrele2(textBox2.Text, siparisID);
                 if (filtrelenmisListe.Rows.Count > 0)
                     dataGridView1.DataSource = filtrelenmisListe ?? vtSiparis.detayListele2(siparisID);
             }

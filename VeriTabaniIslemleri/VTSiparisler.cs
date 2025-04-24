@@ -87,7 +87,8 @@ public class VTSiparisler
         DataTable dt = new DataTable();
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "SELECT * FROM SiparisDetay WHERE siparisID = @siparisID";
+            string sqlKomutu = "SELECT siparisDetayID, siparisID, urunAdi, miktar, birimFiyat, toplamFiyat, durumu, detayNot " +
+                               "FROM SiparisDetay WHERE siparisID = @siparisID";
 
             if (filtre)
                 sqlKomutu += " AND durumu='ödenmedi'";
@@ -113,17 +114,22 @@ public class VTSiparisler
         DataTable dt = new DataTable();
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "SELECT * FROM siparisler";
-            try
+            string sqlKomutu = "SELECT siparisler.siparisID, siparisler.toplamFiyat, siparisler.durumu, siparisler.olusturmaTarihi, siparisler.siparisNot, " +
+                               "masalar.adi AS MasaAdi, kullanicilar.adiSoyadi AS AdiSoyadi FROM siparisler " +
+                               "JOIN masalar ON siparisler.masaID=masalar.masaID " +
+                               "JOIN kullanicilar ON siparisler.kullaniciID=kullanicilar.kullaniciID";
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
             {
-                baglanti.Open();
-                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
-                MySqlDataAdapter da = new MySqlDataAdapter(komut);
-                da.Fill(dt);
-            }
-            catch (Exception hata)
-            {
-                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    baglanti.Open();
+                    MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                    da.Fill(dt);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
         return dt;
@@ -338,78 +344,82 @@ public class VTSiparisler
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
             List<string> conditions = new List<string>();
-            MySqlCommand komut = new MySqlCommand();
-
-            if (!string.IsNullOrEmpty(urunAdi))
+            using (MySqlCommand komut = new MySqlCommand())
             {
-                conditions.Add("urunAdi LIKE @urunAdi");
-                komut.Parameters.AddWithValue("@urunAdi", "%" + urunAdi + "%");
-            }
-            if (siparisID != 0)
-            {
-                conditions.Add("siparisID = @siparisID");
-                komut.Parameters.AddWithValue("@siparisID", siparisID);
-            }
 
-            string sqlKomutu = "SELECT * FROM siparisdetay";
-            if (conditions.Count > 0)
-                sqlKomutu += " WHERE " + string.Join(" AND ", conditions);
+                if (!string.IsNullOrEmpty(urunAdi))
+                {
+                    conditions.Add("urunAdi LIKE @urunAdi");
+                    komut.Parameters.AddWithValue("@urunAdi", "%" + urunAdi + "%");
+                }
+                if (siparisID != 0)
+                {
+                    conditions.Add("siparisID = @siparisID");
+                    komut.Parameters.AddWithValue("@siparisID", siparisID);
+                }
 
-            komut.CommandText = sqlKomutu;
-            komut.Connection = baglanti;
+                string sqlKomutu = "SELECT siparisDetayID, siparisID, urunAdi, miktar, birimFiyat, toplamFiyat, durumu, detayNot FROM siparisdetay";
+                if (conditions.Count > 0)
+                    sqlKomutu += " WHERE " + string.Join(" AND ", conditions);
 
-            try
-            {
-                baglanti.Open();
-                MySqlDataAdapter da = new MySqlDataAdapter(komut);
-                da.Fill(dt);
+                komut.CommandText = sqlKomutu;
+                komut.Connection = baglanti;
+
+                try
+                {
+                    baglanti.Open();
+                    MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                    da.Fill(dt);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            catch (Exception hata)
-            {
-                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            return dt;
         }
+        return dt;
     }
 
-    public DataTable detayFiltrele2(int kategoriID = 0, int siparisID = 0)
+    public DataTable detayFiltrele2(string durumu = null, int siparisID = 0)
     {
         DataTable dt = new DataTable();
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
             List<string> conditions = new List<string>();
-            MySqlCommand komut = new MySqlCommand();
-
-            if (kategoriID != 0)
+            using (MySqlCommand komut = new MySqlCommand())
             {
-                conditions.Add("kategoriID = @kategoriID");
-                komut.Parameters.AddWithValue("@kategoriID", "%" + kategoriID + "%");
-            }
-            if (siparisID != 0)
-            {
-                conditions.Add("siparisID = @siparisID");
-                komut.Parameters.AddWithValue("@siparisID", siparisID);
-            }
 
-            string sqlKomutu = "SELECT * FROM siparisdetay";
-            if (conditions.Count > 0)
-                sqlKomutu += " WHERE " + string.Join(" AND ", conditions);
+                if (!string.IsNullOrEmpty(durumu))
+                {
+                    conditions.Add("durumu LIKE @durumu");
+                    komut.Parameters.AddWithValue("@durumu", "%" + durumu + "%");
+                }
+                if (siparisID != 0)
+                {
+                    conditions.Add("siparisID = @siparisID");
+                    komut.Parameters.AddWithValue("@siparisID", siparisID);
+                }
 
-            komut.CommandText = sqlKomutu;
-            komut.Connection = baglanti;
+                string sqlKomutu = "SELECT siparisDetayID, siparisID, urunAdi, miktar, birimFiyat, toplamFiyat, durumu, detayNot FROM siparisdetay";
+                if (conditions.Count > 0)
+                    sqlKomutu += " WHERE " + string.Join(" AND ", conditions);
 
-            try
-            {
-                baglanti.Open();
-                MySqlDataAdapter da = new MySqlDataAdapter(komut);
-                da.Fill(dt);
+                komut.CommandText = sqlKomutu;
+                komut.Connection = baglanti;
+
+                try
+                {
+                    baglanti.Open();
+                    MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                    da.Fill(dt);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            catch (Exception hata)
-            {
-                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            return dt;
         }
+        return dt;
     }
 
     public DataTable enSonSiparisiBul(int masaID)

@@ -16,6 +16,18 @@ namespace RestoranModulu.Ekranlar.admin
         public AdminUrunlerEkranı()
         {
             InitializeComponent();
+
+            DataTable dt = vt.kategoriListele();
+
+            DataRow yeniSatir = dt.NewRow();
+            yeniSatir["kategoriID"] = 0;
+            yeniSatir["adi"] = "Bir kategori seçin";
+            dt.Rows.InsertAt(yeniSatir, 0);
+
+            comboBox2.DataSource = dt;
+            comboBox2.DisplayMember = "adi";
+            comboBox2.ValueMember = "kategoriID";
+
             dataGridView1.DataSource = vt.Listele();
         }
 
@@ -93,12 +105,12 @@ namespace RestoranModulu.Ekranlar.admin
                     var satir = dataGridView1.Rows[satirNo];
                     urunID = Convert.ToInt32(satir.Cells[0].Value);
                     textBox1.Text = satir.Cells[1].Value.ToString() ?? "";
-                    comboBox2.Text = satir.Cells[2].Value.ToString() ?? "";
-                    textBox4.Text = satir.Cells[3].Value.ToString() ?? "";
-                    textBox3.Text = satir.Cells[4].Value.ToString() ?? "";
+                    textBox4.Text = satir.Cells[2].Value.ToString() ?? "";
+                    textBox3.Text = satir.Cells[3].Value.ToString() ?? "";
                     textBox5.Text = satir.Cells[5].Value.ToString() ?? "";
-                    comboBox1.Text = satir.Cells[6].Value.ToString() ?? "";
-                    textBox2.Text = satir.Cells[7].Value.ToString() ?? "";
+                    textBox6.Text = satir.Cells[4].Value.ToString() ?? "";
+                    textBox2.Text = satir.Cells[6].Value.ToString() ?? "";
+                    comboBox2.Text = satir.Cells[7].Value.ToString() ?? "";
                 }
                 catch (Exception ex)
                 {
@@ -129,8 +141,8 @@ namespace RestoranModulu.Ekranlar.admin
             textBox3.Text = null;
             textBox4.Text = null;
             textBox5.Text = null;
-            comboBox1.Text = null;
-            comboBox2.Text = null;
+            textBox6.Text = null;
+            comboBox2.SelectedIndex = 0;
 
             urunID = 0;
             kategoriID = 0;
@@ -147,8 +159,8 @@ namespace RestoranModulu.Ekranlar.admin
             if (!string.IsNullOrEmpty(textBox1.Text))
                 adi = textBox1.Text;
             else adi = null;
-            if (!string.IsNullOrEmpty(comboBox2.Text))
-                kategoriID = int.Parse(comboBox2.Text);
+            if (Convert.ToInt32(comboBox2.SelectedValue) != 0)
+                kategoriID = Convert.ToInt32(comboBox2.SelectedValue);
             else kategoriID = 0;
             if (!string.IsNullOrEmpty(textBox4.Text))
                 fiyati = int.Parse(textBox4.Text);
@@ -159,8 +171,8 @@ namespace RestoranModulu.Ekranlar.admin
             if (!string.IsNullOrEmpty(textBox5.Text))
                 resimYolu = textBox5.Text;
             else resimYolu = null;
-            if (!string.IsNullOrEmpty(comboBox1.Text))
-                durumu = comboBox1.Text;
+            if (!string.IsNullOrEmpty(textBox6.Text))
+                durumu = textBox6.Text;
             else durumu = null;
             if (!string.IsNullOrEmpty(textBox2.Text))
                 aciklama = textBox2.Text;

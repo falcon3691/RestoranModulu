@@ -180,21 +180,24 @@ public class VTMenu
         DataTable dt = new DataTable();
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "SELECT U.* FROM MenuDetay MD " +
-                               "INNER JOIN Urunler U ON MD.urunID = U.urunID " +
-                               "WHERE MD.menuID = @menuID;";
-            MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
-            komut.Parameters.AddWithValue("@menuID", menuID);
-
-            try
+            string sqlKomutu = "SELECT urunler.urunID, urunler.adi, urunler.fiyati, urunler.miktar, kategoriler.adi FROM menudetay " +
+                               "JOIN urunler ON menudetay.urunID = urunler.urunID " +
+                               "JOIN kategoriler ON urunler.kategoriID=kategoriler.kategoriID " +
+                               "WHERE menudetay.menuID=@menuID";
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
             {
-                baglanti.Open();
-                MySqlDataAdapter da = new MySqlDataAdapter(komut);
-                da.Fill(dt);
-            }
-            catch (Exception hata)
-            {
-                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                komut.Parameters.Clear();
+                komut.Parameters.AddWithValue("@menuID", menuID);
+                try
+                {
+                    baglanti.Open();
+                    MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                    da.Fill(dt);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
         return dt;
@@ -253,26 +256,27 @@ public class VTMenu
 
             if (!string.IsNullOrEmpty(adi))
             {
-                conditions.Add("adi LIKE @adi");
+                conditions.Add("urunler.adi LIKE @adi");
                 komut.Parameters.AddWithValue("@adi", "%" + adi + "%");
             }
             if (kategoriID != 0)
             {
-                conditions.Add("kategoriID = @kategoriID");
+                conditions.Add("urunler.kategoriID = @kategoriID");
                 komut.Parameters.AddWithValue("@kategoriID", kategoriID);
             }
             if (fiyati != 0)
             {
-                conditions.Add("fiyati = @fiyati");
+                conditions.Add("urunler.fiyati = @fiyati");
                 komut.Parameters.AddWithValue("@fiyati", fiyati);
             }
             if (miktar != 0)
             {
-                conditions.Add("miktar = @miktar");
+                conditions.Add("urunler.miktar = @miktar");
                 komut.Parameters.AddWithValue("@miktar", miktar);
             }
 
-            string sqlKomutu = "SELECT * FROM urunler";
+            string sqlKomutu = "SELECT urunler.urunID, urunler.adi, urunler.fiyati, urunler.miktar, kategoriler.adi FROM urunler " +
+                               "JOIN kategoriler ON urunler.kategoriID=kategoriler.kategoriID";
             if (conditions.Count > 0)
                 sqlKomutu += " WHERE " + string.Join(" OR ", conditions);
 

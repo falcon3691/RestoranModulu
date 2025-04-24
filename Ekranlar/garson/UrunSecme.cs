@@ -23,6 +23,17 @@ namespace RestoranModulu.Ekranlar.garson
 
             urunleriOlustur(vtUrun.Listele());
 
+            DataTable dt = vtUrun.kategoriListele();
+
+            DataRow yeniSatir = dt.NewRow();
+            yeniSatir["kategoriID"] = 0;
+            yeniSatir["adi"] = "Bir kategori seçin";
+            dt.Rows.InsertAt(yeniSatir, 0);
+
+            comboBox1.DataSource = dt;
+            comboBox1.DisplayMember = "adi";
+            comboBox1.ValueMember = "kategoriID";
+
             this.masaID = masaID;
             this.kullaniciID = kullaniciID;
         }
@@ -166,15 +177,18 @@ namespace RestoranModulu.Ekranlar.garson
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int kategoriID = int.Parse(comboBox1.Text);
-            flowLayoutPanel1.Controls.Clear();
-            DataTable filtrelenmisListe = vtUrun.urunFiltrele(null, null, null, null, kategoriID);
-            if (filtrelenmisListe.Rows.Count > 0)
-                urunleriOlustur(filtrelenmisListe ?? vtUrun.Listele());
-            else
+            if (comboBox1.SelectedItem is DataRowView row)
             {
-                MessageBox.Show("Girilen bilgilere göre bir ürün bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                urunleriOlustur(vtUrun.Listele());
+                int kategoriID = Convert.ToInt32(row["kategoriID"]);
+                flowLayoutPanel1.Controls.Clear();
+                DataTable filtrelenmisListe = vtUrun.urunFiltrele(null, null, null, null, kategoriID);
+                if (filtrelenmisListe.Rows.Count > 0)
+                    urunleriOlustur(filtrelenmisListe ?? vtUrun.Listele());
+                else
+                {
+                    MessageBox.Show("Girilen bilgilere göre bir ürün bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    urunleriOlustur(vtUrun.Listele());
+                }
             }
         }
 

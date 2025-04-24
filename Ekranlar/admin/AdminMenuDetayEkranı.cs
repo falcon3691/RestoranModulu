@@ -18,6 +18,18 @@ namespace RestoranModulu.Ekranlar.admin
         public AdminMenuDetayEkranı(int menuID = 0, string adi = null)
         {
             InitializeComponent();
+
+            DataTable dtKategori = vtUrun.kategoriListele();
+
+            DataRow yeniSatir = dtKategori.NewRow();
+            yeniSatir["kategoriID"] = 0;
+            yeniSatir["adi"] = "Bir kategori seçin";
+            dtKategori.Rows.InsertAt(yeniSatir, 0);
+
+            comboBox1.DataSource = dtKategori;
+            comboBox1.DisplayMember = "adi";
+            comboBox1.ValueMember = "kategoriID";
+
             if (menuID != 0)
             {
                 this.menuID = menuID;
@@ -192,8 +204,8 @@ namespace RestoranModulu.Ekranlar.admin
             if (!string.IsNullOrEmpty(textBox1.Text))
                 urunAdi = textBox1.Text;
             else adi = null;
-            if (!string.IsNullOrEmpty(comboBox1.Text))
-                kategoriID = int.Parse(comboBox1.Text);
+            if (Convert.ToInt32(comboBox1.SelectedValue) != 0)
+                kategoriID = Convert.ToInt32(comboBox1.SelectedValue);
             else kategoriID = 0;
             if (!string.IsNullOrEmpty(textBox2.Text))
                 fiyati = int.Parse(textBox2.Text);

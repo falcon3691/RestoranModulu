@@ -8,32 +8,31 @@ public class VTUrunler
 {
     public string baglantiKodu = "Server=localhost; Database=restoranmodulu; Uid=root; Pwd=Malukat3691.;";
 
-    public DataTable Listele(int menuID = 0)
+    public DataTable Listele()
     {
         DataTable dt = new DataTable();
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "SELECT * FROM urunler";
+            string sqlKomutu = "SELECT urunler.urunID, urunler.adi, urunler.fiyati, urunler.miktar, urunler.durumu, urunler.resimYolu, urunler.aciklama, kategoriler.adi AS kategoriAdi FROM urunler " +
+                               "JOIN kategoriler ON urunler.kategoriID = kategoriler.kategoriID";
 
-            if (menuID != 0)
-                sqlKomutu += " WHERE menuID=@menuID";
-
-            try
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
             {
-                baglanti.Open();
-                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
-                komut.Parameters.AddWithValue("@menuID", menuID);
-
-                MySqlDataAdapter da = new MySqlDataAdapter(komut);
-                da.Fill(dt);
-            }
-            catch (Exception hata)
-            {
-                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    baglanti.Open();
+                    MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                    da.Fill(dt);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
         return dt;
     }
+
     public void urunEkle(string adi, int kategoriID, int fiyati, int miktar, string durumu = null,
                               string resimYolu = null, string aciklama = null)
     {
@@ -166,41 +165,43 @@ public class VTUrunler
 
             if (!string.IsNullOrEmpty(adi))
             {
-                conditions.Add("adi LIKE @adi");
+                conditions.Add("urunler.adi LIKE @adi");
                 komut.Parameters.AddWithValue("@adi", "%" + adi + "%");
             }
             if (!string.IsNullOrEmpty(durumu))
             {
-                conditions.Add("durumu = @durumu");
+                conditions.Add("urunler.durumu = @durumu");
                 komut.Parameters.AddWithValue("@durumu", durumu);
             }
             if (!string.IsNullOrEmpty(resimYolu))
             {
-                conditions.Add("resimYolu LIKE @resimYolu");
+                conditions.Add("urunler.resimYolu LIKE @resimYolu");
                 komut.Parameters.AddWithValue("@resimYolu", "%" + resimYolu + "%");
             }
             if (!string.IsNullOrEmpty(aciklama))
             {
-                conditions.Add("aciklama LIKE @aciklama");
+                conditions.Add("urunler.aciklama LIKE @aciklama");
                 komut.Parameters.AddWithValue("@aciklama", "%" + aciklama + "%");
             }
             if (kategoriID != 0)
             {
-                conditions.Add("kategoriID = @kategoriID");
+                conditions.Add("urunler.kategoriID = @kategoriID");
                 komut.Parameters.AddWithValue("@kategoriID", kategoriID);
             }
             if (fiyati != 0)
             {
-                conditions.Add("fiyati = @fiyati");
+                conditions.Add("urunler.fiyati = @fiyati");
                 komut.Parameters.AddWithValue("@fiyati", fiyati);
             }
             if (miktar != 0)
             {
-                conditions.Add("miktar = @miktar");
+                conditions.Add("urunler.miktar = @miktar");
                 komut.Parameters.AddWithValue("@miktar", miktar);
             }
 
-            string sqlKomutu = "SELECT * FROM urunler";
+            string sqlKomutu = "SELECT urunler.urunID, urunler.adi, urunler.fiyati, urunler.miktar, urunler.durumu, urunler.resimYolu, urunler.aciklama, kategoriler.adi AS kategoriAdi " +
+                               "FROM urunler " +
+                               "JOIN kategoriler ON urunler.kategoriID = kategoriler.kategoriID";
             if (conditions.Count > 0)
                 sqlKomutu += " WHERE " + string.Join(" OR ", conditions);
 
@@ -221,4 +222,26 @@ public class VTUrunler
         return dt;
     }
 
+    public DataTable kategoriListele()
+    {
+        DataTable dt = new DataTable();
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
+        {
+            string sqlKomutu = "SELECT kategoriID, adi FROM kategoriler";
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
+            {
+                try
+                {
+                    baglanti.Open();
+                    MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                    da.Fill(dt);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.Message, "UYARI", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
+        return dt;
+    }
 }
