@@ -11,19 +11,20 @@ public class VTMutfak
         DataTable dt = new DataTable();
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "SELECT * FROM Masalar WHERE masaID=@masaID";
-
-            try
+            string sqlKomutu = "SELECT adi FROM Masalar WHERE masaID=@masaID";
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
             {
-                baglanti.Open();
-                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
                 komut.Parameters.AddWithValue("@masaID", masaID);
-                MySqlDataAdapter da = new MySqlDataAdapter(komut);
-                da.Fill(dt);
-            }
-            catch (Exception hata)
-            {
-                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                try
+                {
+                    baglanti.Open();
+                    MySqlDataAdapter da = new MySqlDataAdapter(komut);
+                    da.Fill(dt);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
         return dt;
@@ -34,7 +35,7 @@ public class VTMutfak
         DataTable dt = new DataTable();
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "SELECT * FROM Siparisler WHERE durumu != 'ödendi' AND durumu != 'tamamlandı'";
+            string sqlKomutu = "SELECT * FROM Siparisler WHERE durumu != 'ödendi' AND durumu != 'tamamlandı' ORDER BY olusturmaTarihi DESC";
 
             try
             {
@@ -50,4 +51,5 @@ public class VTMutfak
         }
         return dt;
     }
+
 }

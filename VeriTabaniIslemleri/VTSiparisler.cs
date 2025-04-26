@@ -60,7 +60,7 @@ public class VTSiparisler
         DataTable dt = new DataTable();
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "SELECT urunID, urunAdi, miktar, birimFiyat, toplamFiyat, durumu, siparisDetayID FROM siparisdetay WHERE siparisID = @siparisID";
+            string sqlKomutu = "SELECT urunID, urunAdi, miktar, birimFiyat, toplamFiyat, durumu, siparisDetayID, detayNot, siparisID FROM siparisdetay WHERE siparisID = @siparisID";
 
             if (filtre)
                 sqlKomutu += " AND durumu!='ödendi'";
@@ -172,19 +172,45 @@ public class VTSiparisler
             string sqlKomutu = "UPDATE SiparisDetay " +
                                "SET durumu=@durumu " +
                                "WHERE siparisDetayID=@siparisDetayID";
-            try
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
             {
-                baglanti.Open();
-                MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti);
                 komut.Parameters.AddWithValue("@durumu", durumu);
                 komut.Parameters.AddWithValue("@siparisDetayID", siparisDetayID);
-                bool sonuc = komut.ExecuteNonQuery() == 1;
-                if (!sonuc)
-                    MessageBox.Show("Sipariş detayı güncellenemedi.");
+                try
+                {
+                    baglanti.Open();
+                    bool sonuc = komut.ExecuteNonQuery() == 1;
+                    if (!sonuc)
+                        MessageBox.Show("Sipariş detayı güncellenemedi.");
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            catch (Exception hata)
+        }
+    }
+
+    public void siparisDetaySil(int siparisDetayID)
+    {
+        using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
+        {
+            string sqlKomutu = "DELETE FROM siparisDetay WHERE siparisDetayID=@siparisDetayID";
+            using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
             {
-                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                komut.Parameters.Clear();
+                komut.Parameters.AddWithValue("@siparisDetayID", siparisDetayID);
+                try
+                {
+                    baglanti.Open();
+                    bool sonuc = komut.ExecuteNonQuery() == 1;
+                    if (!sonuc)
+                        MessageBox.Show("Sipariş detayı silinemedi.", "UYARI", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.Message, "UYARI", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
         }
     }
@@ -274,7 +300,6 @@ public class VTSiparisler
             try
             {
                 baglanti.Open();
-
                 bool sonuc = komut.ExecuteNonQuery() == 1;
                 if (!sonuc)
                     MessageBox.Show("Sipariş bilgisi güncellenemedi.");
