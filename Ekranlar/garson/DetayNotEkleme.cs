@@ -5,10 +5,17 @@ namespace RestoranModulu.Ekranlar.garson
     public partial class DetayNotEkleme : Form
     {
         public string NotIcerigi { get; private set; }
-        public DetayNotEkleme(string mevcutNot = "")
+        public DetayNotEkleme(string mevcutNot = "", bool gizle = false)
         {
             InitializeComponent();
             textBox1.Text = mevcutNot;
+            if (gizle)
+            {
+                button1.Visible = false;
+                button2.Visible = false;
+                button1.Enabled = false;
+                button2.Enabled = false;
+            }
         }
 
         // Notu Kaydet butonu

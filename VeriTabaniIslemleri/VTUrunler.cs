@@ -13,7 +13,7 @@ public class VTUrunler
         DataTable dt = new DataTable();
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "SELECT urunler.urunID, urunler.adi, urunler.fiyati, urunler.miktar, urunler.durumu, urunler.resimYolu, urunler.aciklama, kategoriler.adi AS kategoriAdi FROM urunler " +
+            string sqlKomutu = "SELECT urunler.urunID, urunler.adi, urunler.fiyati, urunler.miktar, urunler.durumu, urunler.resimYolu, urunler.aciklama, urunler.kategoriID, kategoriler.adi AS kategoriAdi FROM urunler " +
                                "JOIN kategoriler ON urunler.kategoriID = kategoriler.kategoriID";
 
             using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
@@ -199,7 +199,7 @@ public class VTUrunler
                 komut.Parameters.AddWithValue("@miktar", miktar);
             }
 
-            string sqlKomutu = "SELECT urunler.urunID, urunler.adi, urunler.fiyati, urunler.miktar, urunler.durumu, urunler.resimYolu, urunler.aciklama, kategoriler.adi AS kategoriAdi " +
+            string sqlKomutu = "SELECT urunler.urunID, urunler.adi, urunler.fiyati, urunler.miktar, urunler.durumu, urunler.resimYolu, urunler.aciklama, urunler.kategoriID, kategoriler.adi AS kategoriAdi " +
                                "FROM urunler " +
                                "JOIN kategoriler ON urunler.kategoriID = kategoriler.kategoriID";
             if (conditions.Count > 0)
@@ -244,4 +244,5 @@ public class VTUrunler
         }
         return dt;
     }
+
 }

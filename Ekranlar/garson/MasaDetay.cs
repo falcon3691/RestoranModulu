@@ -1,5 +1,6 @@
 ﻿using RestoranModulu.Ekranlar.Kasa;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
@@ -15,6 +16,7 @@ namespace RestoranModulu.Ekranlar.garson
         string adi, masaDurumu, aciklama, siparisDurumu = null;
         int masaID, sandalyeSayisi, kullaniciID = 0;
 
+        List<int> toplamFiyatlar = new List<int>();
         public MasaDetay(int masaID, int kullaniciID, int rolID)
         {
             InitializeComponent();
@@ -24,10 +26,10 @@ namespace RestoranModulu.Ekranlar.garson
             urunleriListele(masaID);
             if (rolID == 2)
                 button3.Visible = true;
-            if (dataGridView1.Columns.Contains("siparisDetayID"))
+            /*if (dataGridView1.Columns.Contains("siparisDetayID"))
             {
                 dataGridView1.Columns["siparisDetayID"].Visible = false;
-            }
+            }*/
         }
 
         // Ödeme Yap butonu
@@ -89,20 +91,105 @@ namespace RestoranModulu.Ekranlar.garson
                 dt.Merge(vtSiparis.detayListele(Convert.ToInt32(siparis[0]), true));
             }
 
-            dataGridView1.DataSource = dt;
-            if (dataGridView1.Columns.Contains("urunID"))
+            foreach (DataRow row in dt.Rows)
             {
-                dataGridView1.Columns["urunID"].Visible = false;
+                string urunAdi = row["urunAdi"].ToString() ?? "";
+                int birimFiyat = Convert.ToInt32(row["birimFiyat"]);
+                int miktar = Convert.ToInt32(row["miktar"]);
+                string durumu = row["durumu"].ToString() ?? "";
+                string detayNot = row["detayNot"].ToString() ?? "";
+                toplamTutar += Convert.ToInt32(row["toplamFiyat"]);
+                SiparisDetay1 detay = new SiparisDetay1(urunAdi, miktar, birimFiyat, detayNot, durumu);
+
+                Panel panel = CreateSiparisDetayPanel(detay);
+                flowLayoutPanel1.Controls.Add(panel);
             }
 
-            foreach (DataGridViewRow row in dataGridView1.Rows)
-            {
-                if (row.Cells["toplamFiyat"].Value != null)
-                    toplamTutar += Convert.ToInt32(row.Cells["toplamFiyat"].Value);
-            }
             label5.Text = toplamTutar.ToString();
+
         }
 
+        public Panel CreateSiparisDetayPanel(SiparisDetay1 detay)
+        {
+            Panel panel = new Panel
+            {
+                Width = 450,
+                Height = 40,
+                BorderStyle = BorderStyle.FixedSingle,
+                Tag = detay
+            };
+
+            // Ürün Adı
+            Label lblUrunAdi = new Label
+            {
+                Text = detay.UrunAdi,
+                Width = 100,
+                Location = new Point(10, 10),
+                TextAlign = ContentAlignment.MiddleLeft
+            };
+
+            // Birim Fiyat
+            Label lblBirimFiyat = new Label
+            {
+                Text = "Birim Fiyatı: " + detay.BirimFiyat.ToString(),
+                Width = 80,
+                Location = new Point(115, 10),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+
+            // Adet
+            Label lblAdet = new Label
+            {
+                Text = "Adeti: " + detay.Adet.ToString(),
+                Width = 50,
+                Location = new Point(200, 10),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Name = "lblAdet"
+            };
+
+
+            // Toplam Fiyat
+            Label lblToplamFiyat = new Label
+            {
+                Text = "Toplam Fiyat: " + (detay.BirimFiyat * detay.Adet).ToString(),
+                Width = 130,
+                Location = new Point(255, 10),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Name = "lblToplamFiyat"
+            };
+
+            if (!string.IsNullOrEmpty(detay.Not.ToString()))
+            {
+                // Not Butonu
+                Button btnNot = new Button
+                {
+                    Text = "Not",
+                    Width = 45,
+                    Height = 23,
+                    Location = new Point(390, 8),
+                    Tag = detay
+                };
+
+                btnNot.Click += (s, e) =>
+                {
+                    DetayNotEkleme form = new DetayNotEkleme(detay.Not, true);
+                    this.SuspendLayout();
+                    if (form.ShowDialog() == DialogResult.OK)
+                    {
+                        detay.Not = form.NotIcerigi;
+                    }
+                    this.ResumeLayout();
+                };
+                panel.Controls.Add(btnNot);
+            }
+
+            panel.Controls.Add(lblUrunAdi);
+            panel.Controls.Add(lblBirimFiyat);
+            panel.Controls.Add(lblAdet);
+            panel.Controls.Add(lblToplamFiyat);
+
+            return panel;
+        }
         public void ekranDoldurma()
         {
             label1.Text = adi ?? "";
@@ -127,6 +214,25 @@ namespace RestoranModulu.Ekranlar.garson
                 else if (siparisDurumu == "ödendi")
                     pictureBox2.BackColor = Color.LightGray;
             }
+        }
+    }
+
+    public class SiparisDetay1
+    {
+        public string UrunAdi { get; set; }
+        public int Adet { get; set; }
+        public string Not { get; set; }
+        public decimal BirimFiyat { get; set; }
+        public decimal ToplamFiyat => BirimFiyat * Adet;
+        public string Durum { get; set; }
+
+        public SiparisDetay1(string urunAdi, int adet, decimal birimFiyat, string detayNot, string durum)
+        {
+            UrunAdi = urunAdi;
+            Adet = adet;
+            BirimFiyat = birimFiyat;
+            Not = detayNot;
+            Durum = durum;
         }
     }
 }

@@ -261,7 +261,10 @@ public class VTMasa
         DataTable dt = new DataTable();
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "SELECT masaID, adi FROM masalar WHERE (grupID IS NULL) AND masaID!=@masaID";
+            string sqlKomutu = "SELECT masaID, adi FROM masalar " +
+                               "WHERE (grupID IS NULL) AND " +
+                               "masaID!=@masaID AND " +
+                               "katID=(SELECT katID FROM masalar WHERE masaID=@masaID)";
 
             try
             {
