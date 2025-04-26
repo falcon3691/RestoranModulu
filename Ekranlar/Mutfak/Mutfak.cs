@@ -115,6 +115,7 @@ namespace RestoranModulu.Ekranlar.Mutfak
                 gosterilenSiparisler.Remove(siparis);
 
             gosterilenDetaylar.RemoveAll(d => d.SiparisID == siparisID);
+
             LoadSiparisAndDetay();
         }
 
@@ -336,6 +337,8 @@ namespace RestoranModulu.Ekranlar.Mutfak
         public void LoadSiparisAndDetay()
         {
             flowLayoutPanel1.Controls.Clear();
+            gosterilenSiparisler.Clear();
+            gosterilenDetaylar.Clear();
             DataTable siparisListesi = vtMutfak.siparisleriListe();
             for (int i = 0; i < siparisListesi.Rows.Count; i++)
             {

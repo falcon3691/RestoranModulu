@@ -1,5 +1,4 @@
-﻿using RestoranModulu.Ekranlar.Mutfak;
-using System;
+﻿using System;
 using System.Windows.Forms;
 
 namespace RestoranModulu
@@ -14,7 +13,7 @@ namespace RestoranModulu
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Mutfak(0));
+            Application.Run(new GirisEkranı());
         }
     }
 }
