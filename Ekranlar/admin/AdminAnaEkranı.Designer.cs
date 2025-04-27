@@ -41,6 +41,7 @@
             this.menüToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mutfakToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.geriDönToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.müşterilerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -56,7 +57,8 @@
             this.ürünlerToolStripMenuItem,
             this.menüToolStripMenuItem,
             this.mutfakToolStripMenuItem,
-            this.geriDönToolStripMenuItem});
+            this.geriDönToolStripMenuItem,
+            this.müşterilerToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(800, 36);
@@ -137,10 +139,22 @@
             this.menüToolStripMenuItem.Text = "Menü";
             this.menüToolStripMenuItem.Click += new System.EventHandler(this.menüToolStripMenuItem_Click);
             // 
+            // mutfakToolStripMenuItem
+            // 
+            this.mutfakToolStripMenuItem.Name = "mutfakToolStripMenuItem";
+            this.mutfakToolStripMenuItem.Size = new System.Drawing.Size(14, 32);
+            // 
             // geriDönToolStripMenuItem
             // 
             this.geriDönToolStripMenuItem.Name = "geriDönToolStripMenuItem";
             this.geriDönToolStripMenuItem.Size = new System.Drawing.Size(14, 32);
+            // 
+            // müşterilerToolStripMenuItem
+            // 
+            this.müşterilerToolStripMenuItem.Name = "müşterilerToolStripMenuItem";
+            this.müşterilerToolStripMenuItem.Size = new System.Drawing.Size(114, 32);
+            this.müşterilerToolStripMenuItem.Text = "Müşteriler";
+            this.müşterilerToolStripMenuItem.Click += new System.EventHandler(this.müşterilerToolStripMenuItem_Click);
             // 
             // AdminAnaEkranı
             // 
@@ -175,5 +189,6 @@
         private System.Windows.Forms.ToolStripMenuItem kullanıcılarıDüzenleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem kategorileriDüzenleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem ürünleriDüzenleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem müşterilerToolStripMenuItem;
     }
 }

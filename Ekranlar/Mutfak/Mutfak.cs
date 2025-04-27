@@ -106,7 +106,7 @@ namespace RestoranModulu.Ekranlar.Mutfak
             var detayPanel = siparisPanel.Controls.OfType<FlowLayoutPanel>().FirstOrDefault(panel => (string)panel.Name == $"flpDetaylar_{siparisID}");
             var panel1 = detayPanel.Controls.OfType<Panel>().ToList();
 
-            vtSiparis.siparisGuncelle(Convert.ToInt32(siparisPanel.Tag), 0, "tamamlandı", null);
+            vtSiparis.siparisGuncelle(Convert.ToInt32(siparisPanel.Tag), 0, "tamamlandı", null, 0);
             foreach (Control kontrol in panel1)
                 vtSiparis.siparisDetayGuncelle(Convert.ToInt32(kontrol.Name.ToString().Remove(0, 9)), "tamamlandı");
 

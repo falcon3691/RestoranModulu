@@ -66,5 +66,11 @@ namespace RestoranModulu.Ekranlar.admin
             form.Show();
         }
 
+        private void müşterilerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AdminMusteriEkranı form = new AdminMusteriEkranı();
+            form.MdiParent = this;
+            form.Show();
+        }
     }
 }

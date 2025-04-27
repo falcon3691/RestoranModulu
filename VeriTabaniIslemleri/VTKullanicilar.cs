@@ -96,74 +96,76 @@ public class VTKullanicilar
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
             List<string> setKisimlari = new List<string>();
-            MySqlCommand komut = new MySqlCommand();
-
-            if (!string.IsNullOrEmpty(adiSoyadi))
+            using (MySqlCommand komut = new MySqlCommand())
             {
-                setKisimlari.Add("adiSoyadi = @adiSoyadi");
-                komut.Parameters.AddWithValue("@adiSoyadi", adiSoyadi);
-            }
 
-            if (!string.IsNullOrEmpty(telefon))
-            {
-                setKisimlari.Add("telefon = @telefon");
-                komut.Parameters.AddWithValue("@telefon", telefon);
-            }
+                if (!string.IsNullOrEmpty(adiSoyadi))
+                {
+                    setKisimlari.Add("adiSoyadi = @adiSoyadi");
+                    komut.Parameters.AddWithValue("@adiSoyadi", adiSoyadi);
+                }
 
-            if (!string.IsNullOrEmpty(eMail))
-            {
-                setKisimlari.Add("eMail = @eMail");
-                komut.Parameters.AddWithValue("@eMail", eMail);
-            }
+                if (!string.IsNullOrEmpty(telefon))
+                {
+                    setKisimlari.Add("telefon = @telefon");
+                    komut.Parameters.AddWithValue("@telefon", telefon);
+                }
 
-            if (!string.IsNullOrEmpty(kullaniciAdi))
-            {
-                setKisimlari.Add("kullaniciAdi = @kullaniciAdi");
-                komut.Parameters.AddWithValue("@kullaniciAdi", kullaniciAdi);
-            }
+                if (!string.IsNullOrEmpty(eMail))
+                {
+                    setKisimlari.Add("eMail = @eMail");
+                    komut.Parameters.AddWithValue("@eMail", eMail);
+                }
 
-            if (!string.IsNullOrEmpty(parola))
-            {
-                setKisimlari.Add("parola = @parola");
-                komut.Parameters.AddWithValue("@parola", ParolaHashle(parola));
-            }
+                if (!string.IsNullOrEmpty(kullaniciAdi))
+                {
+                    setKisimlari.Add("kullaniciAdi = @kullaniciAdi");
+                    komut.Parameters.AddWithValue("@kullaniciAdi", kullaniciAdi);
+                }
 
-            if (!string.IsNullOrEmpty(durumu))
-            {
-                setKisimlari.Add("durumu = @durumu");
-                komut.Parameters.AddWithValue("@durumu", durumu);
-            }
+                if (!string.IsNullOrEmpty(parola))
+                {
+                    setKisimlari.Add("parola = @parola");
+                    komut.Parameters.AddWithValue("@parola", ParolaHashle(parola));
+                }
 
-            if (!string.IsNullOrEmpty(aciklama))
-            {
-                setKisimlari.Add("aciklama = @aciklama");
-                komut.Parameters.AddWithValue("@aciklama", aciklama);
-            }
+                if (!string.IsNullOrEmpty(durumu))
+                {
+                    setKisimlari.Add("durumu = @durumu");
+                    komut.Parameters.AddWithValue("@durumu", durumu);
+                }
 
-            if (rolID != 0)
-            {
-                setKisimlari.Add("rolID = @rolID");
-                komut.Parameters.AddWithValue("@rolID", rolID);
-            }
+                if (!string.IsNullOrEmpty(aciklama))
+                {
+                    setKisimlari.Add("aciklama = @aciklama");
+                    komut.Parameters.AddWithValue("@aciklama", aciklama);
+                }
 
-            if (setKisimlari.Count == 0)
-                MessageBox.Show("Güncellenecek herhangi bir alan belirtilmedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (rolID != 0)
+                {
+                    setKisimlari.Add("rolID = @rolID");
+                    komut.Parameters.AddWithValue("@rolID", rolID);
+                }
 
-            string sqlKomutu = $"UPDATE kullanicilar SET {string.Join(", ", setKisimlari)} WHERE kullaniciID = @kullaniciID";
-            komut.CommandText = sqlKomutu;
-            komut.Parameters.AddWithValue("@kullaniciID", kullaniciID);
-            komut.Connection = baglanti;
+                if (setKisimlari.Count == 0)
+                    MessageBox.Show("Güncellenecek herhangi bir alan belirtilmedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-            try
-            {
-                baglanti.Open();
-                bool sonuc = (komut.ExecuteNonQuery() == 1) ? true : false;
-                if (!sonuc)
-                    MessageBox.Show("Kullanıcı bilgileri güncellenemedi.");
-            }
-            catch (Exception hata)
-            {
-                MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                string sqlKomutu = $"UPDATE kullanicilar SET {string.Join(", ", setKisimlari)} WHERE kullaniciID = @kullaniciID";
+                komut.CommandText = sqlKomutu;
+                komut.Parameters.AddWithValue("@kullaniciID", kullaniciID);
+                komut.Connection = baglanti;
+
+                try
+                {
+                    baglanti.Open();
+                    bool sonuc = (komut.ExecuteNonQuery() == 1) ? true : false;
+                    if (!sonuc)
+                        MessageBox.Show("Kullanıcı bilgileri güncellenemedi.");
+                }
+                catch (Exception hata)
+                {
+                    MessageBox.Show(hata.ToString(), "HATA", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
     }

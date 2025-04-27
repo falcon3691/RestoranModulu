@@ -37,7 +37,7 @@ public class VTSiparisler
         DataTable dt = new DataTable();
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "SELECT * FROM siparisler WHERE masaID = @masaID";
+            string sqlKomutu = "SELECT * FROM siparisler WHERE masaID = @masaID AND durumu!='ödendi'";
             try
             {
                 baglanti.Open();
@@ -169,11 +169,10 @@ public class VTSiparisler
     {
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
         {
-            string sqlKomutu = "UPDATE SiparisDetay " +
-                               "SET durumu=@durumu " +
-                               "WHERE siparisDetayID=@siparisDetayID";
+            string sqlKomutu = "UPDATE SiparisDetay SET durumu=@durumu WHERE siparisDetayID=@siparisDetayID";
             using (MySqlCommand komut = new MySqlCommand(sqlKomutu, baglanti))
             {
+
                 komut.Parameters.AddWithValue("@durumu", durumu);
                 komut.Parameters.AddWithValue("@siparisDetayID", siparisDetayID);
                 try
@@ -263,7 +262,7 @@ public class VTSiparisler
         }
     }
 
-    public void siparisGuncelle(int siparisID, int toplamFiyat, string durumu, string siparisNot)
+    public void siparisGuncelle(int siparisID, int toplamFiyat, string durumu, string siparisNot, int iskontoDegeri)
     {
         string tarih = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         using (MySqlConnection baglanti = new MySqlConnection(baglantiKodu))
@@ -287,6 +286,17 @@ public class VTSiparisler
             {
                 setKisimlari.Add("siparisNot = @siparisNot");
                 komut.Parameters.AddWithValue("@siparisNot", siparisNot);
+            }
+
+            if (!string.IsNullOrEmpty(siparisNot))
+            {
+                setKisimlari.Add("siparisNot = @siparisNot");
+                komut.Parameters.AddWithValue("@siparisNot", siparisNot);
+            }
+            if (iskontoDegeri != 0)
+            {
+                setKisimlari.Add("iskontoDegeri = @iskontoDegeri");
+                komut.Parameters.AddWithValue("@iskontoDegeri", iskontoDegeri);
             }
             if (setKisimlari.Count == 0)
                 MessageBox.Show("Güncellenecek herhangi bir alan belirtilmedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);

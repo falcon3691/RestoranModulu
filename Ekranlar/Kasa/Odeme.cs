@@ -11,11 +11,13 @@ namespace RestoranModulu.Ekranlar.Kasa
     {
         VTMasa vtMasa = new VTMasa();
         VTSiparisler vtSiparis = new VTSiparisler();
+        VTMusteriler vtMusteri = new VTMusteriler();
 
         string adi, masaDurumu, aciklama = null;
         int masaID, kullaniciID = 0;
+        bool iskonto = false;
 
-        int secilenTutar, kalanTutar, toplamTutar, odenenTutar, paraUstu = 0;
+        int secilenTutar, kalanTutar, toplamTutar, yeniTutar, odenenTutar, paraUstu = 0;
         List<siparisDetaylari> secilenDetayID = new List<siparisDetaylari>();
 
         public Odeme(int masaID)
@@ -24,6 +26,7 @@ namespace RestoranModulu.Ekranlar.Kasa
             degerAtama(masaID);
             urunleriListele(masaID);
             ekranDoldurma();
+            musterileriListele(vtMusteri.Listele());
         }
 
         // Hepsini Öde butonu
@@ -38,7 +41,11 @@ namespace RestoranModulu.Ekranlar.Kasa
 
             foreach (DataRow siparis in vtSiparis.Listele2(masaID).Rows)
             {
-                vtSiparis.siparisGuncelle(Convert.ToInt32(siparis["siparisID"]), toplamTutar, "ödendi", null);
+                Console.WriteLine("İskonto değeri: " + iskonto);
+                if (iskonto)
+                    vtSiparis.siparisGuncelle(Convert.ToInt32(siparis["siparisID"]), toplamTutar, "ödendi", null, Convert.ToInt32(comboBox1.SelectedValue));
+                else
+                    vtSiparis.siparisGuncelle(Convert.ToInt32(siparis["siparisID"]), toplamTutar, "ödendi", null, 0);
             }
             this.Close();
         }
@@ -100,7 +107,11 @@ namespace RestoranModulu.Ekranlar.Kasa
                 var detaylar = vtSiparis.detayListele(Convert.ToInt32(siparis["siparisID"]), true);
                 if (detaylar.Rows.Count == 0)
                 {
-                    vtSiparis.siparisGuncelle(Convert.ToInt32(siparis["siparisID"]), Convert.ToInt32(siparis["toplamFiyat"]), "ödendi", null);
+                    if (iskonto)
+                        vtSiparis.siparisGuncelle(Convert.ToInt32(siparis["siparisID"]), toplamTutar, "ödendi", null, Convert.ToInt32(comboBox1.SelectedValue));
+                    else
+                        vtSiparis.siparisGuncelle(Convert.ToInt32(siparis["siparisID"]), toplamTutar, "ödendi", null, 0);
+
                 }
             }
 
@@ -109,6 +120,30 @@ namespace RestoranModulu.Ekranlar.Kasa
             {
                 MessageBox.Show("Tüm hesap ödendi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 this.Close();
+            }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboBox1.Enabled && !iskonto)
+            {
+                double iskontoDegeri = Convert.ToInt32(comboBox1.SelectedValue);
+                if (iskontoDegeri > 0)
+                {
+                    yeniTutar = toplamTutar - Convert.ToInt32(toplamTutar * (iskontoDegeri / 100));
+                    MessageBox.Show("%" + iskontoDegeri.ToString() + " değerinde iskonto bulundu." +
+                                    "\nÖdenmesi gereken toplam tutar: " + yeniTutar.ToString() + " TL oldu.", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    kalanTutar = yeniTutar;
+                    ekranDoldurma();
+                    iskonto = true;
+                }
+            }
+            else if (iskonto)
+            {
+                yeniTutar = toplamTutar;
+                kalanTutar = yeniTutar;
+                ekranDoldurma();
+                iskonto = false;
             }
         }
 
@@ -234,6 +269,7 @@ namespace RestoranModulu.Ekranlar.Kasa
             }
 
             this.toplamTutar = toplamTutar;
+            this.yeniTutar = toplamTutar;
             this.kalanTutar = toplamTutar;
         }
 
@@ -255,7 +291,7 @@ namespace RestoranModulu.Ekranlar.Kasa
             label1.Text = adi;
             textBox1.Text = secilenTutar.ToString();
             textBox2.Text = kalanTutar.ToString();
-            textBox3.Text = toplamTutar.ToString();
+            textBox3.Text = yeniTutar.ToString();
             textBox4.Text = odenenTutar.ToString();
             textBox5.Text = paraUstu.ToString();
 
@@ -273,6 +309,19 @@ namespace RestoranModulu.Ekranlar.Kasa
             if (odenDiMi)
                 pictureBox1.BackColor = Color.LightGreen;
 
+        }
+
+        public void musterileriListele(DataTable dt)
+        {
+            DataRow yeniSatir = dt.NewRow();
+            yeniSatir["iskontoDegeri"] = 0;
+            yeniSatir["adiSoyadi"] = "Bir müşteri seçin";
+            dt.Rows.InsertAt(yeniSatir, 0);
+
+            comboBox1.DataSource = dt;
+            comboBox1.DisplayMember = "adiSoyadi";
+            comboBox1.ValueMember = "iskontoDegeri";
+            comboBox1.Enabled = true;
         }
     }
 

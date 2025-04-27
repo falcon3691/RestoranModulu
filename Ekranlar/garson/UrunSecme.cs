@@ -60,10 +60,10 @@ namespace RestoranModulu.Ekranlar.garson
                 string not = textBox2.Text;
                 if (!string.IsNullOrEmpty(not))
                 {
-                    vtSiparis.siparisGuncelle(siparisID, Convert.ToInt32(label5.Text), "bekliyor", not);
+                    vtSiparis.siparisGuncelle(siparisID, Convert.ToInt32(label5.Text), "bekliyor", not, 0);
                 }
                 else
-                    vtSiparis.siparisGuncelle(siparisID, Convert.ToInt32(label5.Text), "bekliyor", null);
+                    vtSiparis.siparisGuncelle(siparisID, Convert.ToInt32(label5.Text), "bekliyor", null, 0);
                 this.Close();
             }
         }
