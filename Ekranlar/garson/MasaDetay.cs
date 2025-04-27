@@ -26,10 +26,6 @@ namespace RestoranModulu.Ekranlar.garson
             urunleriListele(masaID);
             if (rolID == 2)
                 button3.Visible = true;
-            /*if (dataGridView1.Columns.Contains("siparisDetayID"))
-            {
-                dataGridView1.Columns["siparisDetayID"].Visible = false;
-            }*/
         }
 
         // Ödeme Yap butonu
@@ -83,6 +79,7 @@ namespace RestoranModulu.Ekranlar.garson
 
         public void urunleriListele(int masaID)
         {
+            flowLayoutPanel1.Controls.Clear();
             int toplamTutar = 0;
             DataTable dt = new DataTable();
             foreach (DataRow siparis in vtSiparis.Listele2(masaID).Rows)
